@@ -49,17 +49,8 @@ def overlay_image(image, ids, corners):
     cv2.waitKey(1)
 
 
-class DetectionState:
-    def __init__(self):
-        self.deferred = None
 
-    def get_deferred(self):
-        if self.deferred is None or self.deferred.called:
-            self.deferred = Deferred()
-        return self.deferred
-
-
-def detect_aruco_cards(frame, state):
+def detect_aruco_cards(frame):
     # This function is called each time the robot sees a change in the camera
 
     frame_single = frame["data"][
@@ -82,8 +73,8 @@ def detect_aruco_cards(frame, state):
 
     # Detect the markers in the image
     corners, ids, rejectedImgPoints = detector.detectMarkers(image)
-    
-    overlay_image(image, ids, corners)
+
+    # overlay_image(image, ids, corners)
 
 
 @inlineCallbacks
@@ -93,25 +84,14 @@ def main(session, details):
     print("")
 
     # Create a shared state object
-    state = DetectionState()
 
     # Subscribe the camera (sight) stream to the system in the function vision(stream)
-    yield session.subscribe(
-        lambda frame: detect_aruco_cards(frame, state), "rom.sensor.sight.stream"
-    )
+    yield session.subscribe(detect_aruco_cards, "rom.sensor.sight.stream")
     yield session.call(
         "rom.sensor.sight.sensitivity"
-    )  # Set the sensitivity of the camera
-    # and call the stream
+    )  # Set the sensitivity of the camera and call the stream
     yield session.call("rom.sensor.sight.stream")
     print("Subscribed to the camera stream")
-
-    while True:
-        # Wait for the detection result
-        ids, corners = yield state.get_deferred()
-        print("Detected ArUco markers in main:")
-        print("ids:", ids)
-        print("corners:", corners)
 
 
 wamp = Component(
