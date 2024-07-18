@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="alpha-mini-rug",
-    version="0.1.0",
+    name="alpha_mini_rug",
+    version="0.1.1",
     description="Alpha Mini Robot wrapper for the RUG Social Robotics Lab",
     author="RUG Social Robotics Lab",
     packages=find_packages(),
@@ -12,6 +12,5 @@ setup(
         "numpy",
         "opencv-python",
         "opencv-contrib-python",
-        "base64",
     ],
 )

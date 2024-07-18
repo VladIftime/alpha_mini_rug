@@ -1,9 +1,8 @@
-from autobahn.twisted.component import Component, run
-from twisted.internet.defer import inlineCallbacks
-from autobahn.twisted.util import sleep
 from random import randint
 
+
 user_response = ""
+answers_found = False
 
 
 def listen_smart_question(frames):
@@ -13,9 +12,6 @@ def listen_smart_question(frames):
     if frames["data"]["body"]["final"]:
         print(frames["data"]["body"]["text"])
         user_response = frames["data"]["body"]["text"]
-
-
-answers_found = False
 
 
 def find_the_answer(answer_dictionary):
@@ -31,7 +27,6 @@ def find_the_answer(answer_dictionary):
     return answers_found, answer
 
 
-@inlineCallbacks
 def smart_questions(session, question, answer_dictionary):
     waiting_time = 5
     number_attempts = 3
@@ -77,39 +72,3 @@ def smart_questions(session, question, answer_dictionary):
                 yield session.call(
                     "rie.dialogue.say", text=question_try_again[randint(0, 3)]
                 )
-
-
-@inlineCallbacks
-def main(session, details):
-    # question_quiz = ["What is the capital of Netherlands?", "What is the capital of France?",  "What is the capital of Germany?"]
-
-    question_quiz = "What is the capital of Netherlands?"
-
-    # multiple possible answers to the same question
-    answers_user = {
-        "amsterdam": ["amster", "dam", "amsterdam", "amsterd"],
-        "paris": ["par", "paris", "ris"],
-        "berlin": ["berlin", "ber", "lin", "berl"],
-    }
-
-    answer = yield smart_questions(
-        session, question=question_quiz, answer_dictionary=answers_user
-    )
-    print("The anwser is:", answer)
-
-
-wamp = Component(
-    transports=[
-        {
-            "url": "ws://wamp.robotsindeklas.nl",
-            "serializers": ["json"],
-            "max_retries": 0,
-        }
-    ],
-    realm="rie.6698e1a90f3d8a1b0bad848f",
-)
-
-wamp.on_join(main)
-
-if __name__ == "__main__":
-    run([wamp])

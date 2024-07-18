@@ -1,18 +1,32 @@
-import base64
-from PIL import Image
-from io import BytesIO
+from autobahn.twisted.component import Component, run
+from twisted.internet.defer import inlineCallbacks, Deferred
+from autobahn.twisted.util import sleep
+from alpha_mini_rug import aruco_detect_markers
 
-# Your base64 encoded string
-base64_string = ""
 
-# Decode the base64 string
-image_data = base64.b64decode(base64_string)
+@inlineCallbacks
+def main(session, details):
+    print("Hello, world!")
+    yield session.subscribe(aruco_detect_markers, "rom.sensor.sight.stream")
+    yield session.call(
+        "rom.sensor.sight.sensitivity"
+    )  # Set the sensitivity of the camera and call the stream
+    yield session.call("rom.sensor.sight.stream")
+    print("Subscribed to the camera stream")
 
-# Create an image from the decoded bytes
-image = Image.open(BytesIO(image_data))
 
-# Display the image
-image.show()
+wamp = Component(
+    transports=[
+        {
+            "url": "ws://wamp.robotsindeklas.nl",
+            "serializers": ["json"],
+            "max_retries": 0,
+        }
+    ],
+    realm="rie.6690edeee1b5df3bc1d36816",
+)
 
-# Save the image to a file if needed
-image.save("/mnt/data/decoded_image.png")
+wamp.on_join(main)
+
+if __name__ == "__main__":
+    run([wamp])
