@@ -1,4 +1,6 @@
 from random import randint
+from twisted.internet.defer import inlineCallbacks
+from autobahn.twisted.util import sleep
 
 
 user_response = ""
@@ -26,7 +28,7 @@ def find_the_answer(answer_dictionary):
 
     return answers_found, answer
 
-
+@inlineCallbacks
 def smart_questions(session, question, answer_dictionary):
     waiting_time = 5
     number_attempts = 3
@@ -70,5 +72,5 @@ def smart_questions(session, question, answer_dictionary):
             else:
                 timer = 0
                 yield session.call(
-                    "rie.dialogue.say", text=question_try_again[randint(0, 3)]
+                    "rie.dialogue.say", text=question_try_again[randint(0, 2)]
                 )
