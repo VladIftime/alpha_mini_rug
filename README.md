@@ -6,7 +6,7 @@ Updates:
 
 - **Smart questions**
 
-- **Key words**
+- **Key words only English**
   - currently we implemented two questions:
     - What is your favorite color?
     - What is your favorite season?
@@ -23,6 +23,10 @@ Updates:
       - if yes: robot returns a positive response
       - if not: robot returns a hint
     - repeat
+  
+- **Key words Dutch and English**
+  - currently we implemented one question:
+    - What is your favorite time of the day?
   
 - **Follow faces**
 
