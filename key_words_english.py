@@ -11,12 +11,12 @@ def on_keyword(frame):
         sess.call("rie.dialogue.say", text="Ja")
         
 def key_words_simple(question = None, key_words = None):
-    global session
+    global sess
     
     # ask question
-    yield session.call("rie.dialogue.say", text=question)
+    yield sess.call("rie.dialogue.say", text=question)
     # get user input and parse it
-    user_input = yield session.call("rie.dialogue.stt.read", time=5000)
+    user_input = yield sess.call("rie.dialogue.stt.read", time=5000)
     user_response = ""
     for frame in user_input:
         if frame["data"]["body"]["final"]:
@@ -63,13 +63,13 @@ def main(session, details):
 
     
     # define question 2 with the keywords and answers
-    question_season = "What is your favorite season?"
-    keywords_seasons = ["winter", "spring", "summer", "autumn"]
-    answer_general_seasons = "is a great season!"
-    answer_winter = "Winter is known for its cold weather and snowfall. This season plays a crucial role in replenishing water supplies through snowmelt, providing resources for ecosystems in the warmer months"
-    answer_spring = "Spring is often associated with renewal and new beginnings. During this season, many animals come out of hibernation, and flowers such as tulips and daffodils start to bloom."
-    answer_summer = "Summer is typically the warmest season of the year, with longer days and shorter nights. It's also the time when many fruits and vegetables reach their peak ripeness."
-    answer_autumn = "During autumn, trees prepare for winter by shedding their leaves. This happens because chlorophyll breaks down, revealing other pigments that were hidden during the growing season."
+    # question_season = "What is your favorite season?"
+    # keywords_seasons = ["winter", "spring", "summer", "autumn"]
+    # answer_general_seasons = "is a great season!"
+    # answer_winter = "Winter is known for its cold weather and snowfall. This season plays a crucial role in replenishing water supplies through snowmelt, providing resources for ecosystems in the warmer months"
+    # answer_spring = "Spring is often associated with renewal and new beginnings. During this season, many animals come out of hibernation, and flowers such as tulips and daffodils start to bloom."
+    # answer_summer = "Summer is typically the warmest season of the year, with longer days and shorter nights. It's also the time when many fruits and vegetables reach their peak ripeness."
+    # answer_autumn = "During autumn, trees prepare for winter by shedding their leaves. This happens because chlorophyll breaks down, revealing other pigments that were hidden during the growing season."
 
     # change the language to English
     yield session.call("rie.dialogue.config.language", lang="en")
