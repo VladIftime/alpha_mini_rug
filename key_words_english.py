@@ -23,7 +23,7 @@ def key_words_simple(question = None, key_words = None):
         if frame["data"]["body"]["final"]:
             print(frame["data"]["body"]["text"])
             user_response = frame["data"]["body"]["text"]
-    # user_input = user_input.split()
+    # user_response = user_response.split()
     
     answer_found = None
     for word in user_response:
