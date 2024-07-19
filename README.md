@@ -3,10 +3,12 @@
 Updates:
 
 - **Arunco cards**
-
+  - In combination with a simple callback to the sight.stream, the aruco_detect_markers function returns all the ids and corners of the Aruco cards the robot currently sees.
 - **Smart questions**
 
 - **Key words only English**
+  - Asks a smart questions and returns the answer of the user.
+- **Key words**
   - currently we implemented two questions:
     - What is your favorite color?
     - What is your favorite season?
@@ -29,5 +31,9 @@ Updates:
     - What is your favorite time of the day?
   
 - **Follow faces**
-
+  - TODO
 - **ROS**
+  - Can it be done?
+
+- **General remarks**
+  
