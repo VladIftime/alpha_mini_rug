@@ -9,6 +9,28 @@ def on_keyword(frame):
         and frame["data"]["body"]["certainty"] > 0.45
     ):
         sess.call("rie.dialogue.say", text="Ja")
+        
+def key_words_simple(question = None, key_words = None):
+    global session
+    
+    # ask question
+    yield session.call("rie.dialogue.say", text=question)
+    # get user input and parse it
+    user_input = yield session.call("rie.dialogue.stt.read", time=5000)
+    user_response = ""
+    for frame in user_input:
+        if frame["data"]["body"]["final"]:
+            print(frame["data"]["body"]["text"])
+            user_response = frame["data"]["body"]["text"]
+    # user_input = user_input.split()
+    
+    answer_found = None
+    for word in user_response:
+        if word in key_words and answer_found is None:
+            answer_found = word
+            break
+    
+    return answer_found        
 
 
 @inlineCallbacks
@@ -45,35 +67,17 @@ def main(session, details):
     session.call("rie.dialogue.say.animated", text="Hello!")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
 
-    # ask question about colors
-    yield session.call("rie.dialogue.say", text=question_colors)
-
-    # get user input and parse it
-    user_input = yield session.call("rie.dialogue.stt.read", time=5000)
-    user_response = ""
-    for frame in user_input:
-        if frame["data"]["body"]["final"]:
-            print(frame["data"]["body"]["text"])
-            user_response = frame["data"]["body"]["text"]
-    # user_input = user_input.split()
-    answer_color_found = None
-    for word in user_response:
-        if word in keywords_colors and answer_color_found is None:
-            answer_color_found = word
-            break
+    answer_found = key_words_simple(question = question_colors, key_words = keywords_colors)
 
     # yield session.call(
     #     "rie.dialogue.say", text=answer_general_colors + answer_color_found
     # )
+    
     yield session.call("rie.dialogue.say", text="Did you know that:")
-    answer_string = "answer_" + answer_color_found
+    answer_string = "answer_" + answer_found
     yield session.call("rie.dialogue.say", text=answer_string)
 
     session.leave()
-
-    # use certainty?
-    # if ("certainty" in frame["user_input"]["body"] and
-    # frame["user_input"]["body"]["certainty"] > 0.45):
 
 
 wamp = Component(
