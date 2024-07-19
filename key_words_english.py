@@ -42,14 +42,26 @@ def main(session, details):
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
     answer_general_colors = "Great, my favorite color is also"
-    answer_red = "Red is the first color that humans perceive as babies. It is often used in warning signs because it catches our attention quickly."
-    answer_green = "Green is the color most associated with nature. It's also the easiest color for the human eye to see."
-    answer_blue = "Blue is the color of the sky and the ocean. Interestingly, blue can suppress appetite, which is why it's not commonly used in food packaging"
-    answer_yellow = "Yellow is the most visible color in daylight, making it ideal for use in high-visibility clothing and road signs."
-    answer_pink = "Studies have shown that exposure to pink can have a calming effect on nerves and even reduce aggression."
-    answer_orange = "Orange is the color of many fruits and vegetables, which are often rich in vitamins."
-    answer_purple = "Purple has been historically associated with royalty and luxury because purple dye was rare and expensive to produce."
+   
+    dictionary_colors = {}
+       
+    answer_red = "answer_red"
+    answer_green = "answer_green"
+    answer_blue = "answer_blue"
+    answer_yellow = "answer_yellow"
+    answer_pink = "answer_pink"
+    answer_orange = "answer_orange"
+    answer_purple = "answer_purple"
+    
+    dictionary_colors[answer_red] = "Red is the first color that humans perceive as babies. It is often used in warning signs because it catches our attention quickly."
+    dictionary_colors[answer_green] = "Green is the color most associated with nature. It's also the easiest color for the human eye to see."
+    dictionary_colors[answer_blue] = "Blue is the color of the sky and the ocean. Interestingly, blue can suppress appetite, which is why it's not commonly used in food packaging"
+    dictionary_colors[answer_yellow] = "Yellow is the most visible color in daylight, making it ideal for use in high-visibility clothing and road signs."
+    dictionary_colors[answer_pink] = "Studies have shown that exposure to pink can have a calming effect on nerves and even reduce aggression."
+    dictionary_colors[answer_orange] = "Orange is the color of many fruits and vegetables, which are often rich in vitamins."
+    dictionary_colors[answer_purple] = "Purple has been historically associated with royalty and luxury because purple dye was rare and expensive to produce."
 
+    
     # define question 2 with the keywords and answers
     question_season = "What is your favorite season?"
     keywords_seasons = ["winter", "spring", "summer", "autumn"]
