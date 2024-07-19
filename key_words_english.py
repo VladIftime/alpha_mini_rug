@@ -10,28 +10,37 @@ def on_keyword(frame):
     ):
         sess.call("rie.dialogue.say", text="Ja")
 
-@inlineCallbacks        
-def key_words_simple(question = None, key_words = None):
+
+@inlineCallbacks
+def key_words_simple(question=None, key_words=None, time=1000, debug=False):
     global sess
-    
+
     # ask question
     yield sess.call("rie.dialogue.say", text=question)
     # get user input and parse it
-    user_input = yield sess.call("rie.dialogue.stt.read", time=5000)
+    user_input = yield sess.call("rie.dialogue.stt.read", time=time)
     user_response = ""
+    if debug:
+        print("The entire user input is: ")
+        print(user_input)
+
     for frame in user_input:
         if frame["data"]["body"]["final"]:
-            print(frame["data"]["body"]["text"])
             user_response = frame["data"]["body"]["text"]
-    # user_input = user_input.split()
-    
+
+    if debug:
+        print("The user response is : " + user_response)
     answer_found = None
-    for word in user_response:
+
+    for word in user_response.split():
+        word = word.lower()
+        print(word)
         if word in key_words and answer_found is None:
             answer_found = word
             break
-    
-    return answer_found        
+    if debug:
+        print("The keyword found: " + answer_found)
+    return answer_found
 
 
 @inlineCallbacks
@@ -42,9 +51,9 @@ def main(session, details):
     # define question 1 together with the keywords and answers
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
-   
+
     dictionary_colors = {}
-       
+
     answer_red = "answer_red"
     answer_green = "answer_green"
     answer_blue = "answer_blue"
@@ -52,16 +61,29 @@ def main(session, details):
     answer_pink = "answer_pink"
     answer_orange = "answer_orange"
     answer_purple = "answer_purple"
-    
-    dictionary_colors[answer_red] = "Red is the first color that humans perceive as babies. It is often used in warning signs because it catches our attention quickly."
-    dictionary_colors[answer_green] = "Green is the color most associated with nature. It's also the easiest color for the human eye to see."
-    dictionary_colors[answer_blue] = "Blue is the color of the sky and the ocean. Interestingly, blue can suppress appetite, which is why it's not commonly used in food packaging"
-    dictionary_colors[answer_yellow] = "Yellow is the most visible color in daylight, making it ideal for use in high-visibility clothing and road signs."
-    dictionary_colors[answer_pink] = "Studies have shown that exposure to pink can have a calming effect on nerves and even reduce aggression."
-    dictionary_colors[answer_orange] = "Orange is the color of many fruits and vegetables, which are often rich in vitamins."
-    dictionary_colors[answer_purple] = "Purple has been historically associated with royalty and luxury because purple dye was rare and expensive to produce."
 
-    
+    dictionary_colors[answer_red] = (
+        "Red is the first color that humans perceive as babies. It is often used in warning signs because it catches our attention quickly."
+    )
+    dictionary_colors[answer_green] = (
+        "Green is the color most associated with nature. It's also the easiest color for the human eye to see."
+    )
+    dictionary_colors[answer_blue] = (
+        "Blue is the color of the sky and the ocean. Interestingly, blue can suppress appetite, which is why it's not commonly used in food packaging"
+    )
+    dictionary_colors[answer_yellow] = (
+        "Yellow is the most visible color in daylight, making it ideal for use in high-visibility clothing and road signs."
+    )
+    dictionary_colors[answer_pink] = (
+        "Studies have shown that exposure to pink can have a calming effect on nerves and even reduce aggression."
+    )
+    dictionary_colors[answer_orange] = (
+        "Orange is the color of many fruits and vegetables, which are often rich in vitamins."
+    )
+    dictionary_colors[answer_purple] = (
+        "Purple has been historically associated with royalty and luxury because purple dye was rare and expensive to produce."
+    )
+
     # define question 2 with the keywords and answers
     # question_season = "What is your favorite season?"
     # keywords_seasons = ["winter", "spring", "summer", "autumn"]
@@ -79,14 +101,16 @@ def main(session, details):
     session.call("rie.dialogue.say.animated", text="Hello!")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
 
-    answer_found = key_words_simple(question = question_colors, key_words = keywords_colors)
+    answer_found = yield key_words_simple(
+        question=question_colors, key_words=keywords_colors, time=5000
+    )
 
     answer_general_colors = "Great, my favorite color is also" + answer_found
     yield session.call("rie.dialogue.say", text=answer_general_colors)
-    
+
     yield session.call("rie.dialogue.say", text="Did you know that:")
     answer_string = "answer_" + answer_found
-    yield session.call("rie.dialogue.say", text=answer_string)
+    yield session.call("rie.dialogue.say", text=dictionary_colors[answer_string])
 
     session.leave()
 
