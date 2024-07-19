@@ -49,18 +49,22 @@ def main(session, details):
     yield session.call("rie.dialogue.say", text=question_colors)
 
     # get user input and parse it
-    user_input = yield session.call("rie.dialogue.stt.read", time=10000)
-    user_input = frames[["data"]["body"]["text"]]  # maybe don't use frame??
-    user_input = user_input.split()
+    user_input = yield session.call("rie.dialogue.stt.read", time=5000)
+    user_response = ""
+    for frame in user_input:
+        if frame["data"]["body"]["final"]:
+            print(frame["data"]["body"]["text"])
+            user_response = frame["data"]["body"]["text"]
+    # user_input = user_input.split()
     answer_color_found = None
-    for word in user_input:
+    for word in user_response:
         if word in keywords_colors and answer_color_found is None:
             answer_color_found = word
             break
 
-    yield session.call(
-        "rie.dialogue.say", text=answer_general_colors + answer_color_found
-    )
+    # yield session.call(
+    #     "rie.dialogue.say", text=answer_general_colors + answer_color_found
+    # )
     yield session.call("rie.dialogue.say", text="Did you know that:")
     answer_string = "answer_" + answer_color_found
     yield session.call("rie.dialogue.say", text=answer_string)
@@ -80,7 +84,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.6698e1a90f3d8a1b0bad848f",
+    realm="rie.669a45f50f3d8a1b0bad8b98",
 )
 
 wamp.on_join(main)
