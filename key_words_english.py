@@ -9,7 +9,8 @@ def on_keyword(frame):
         and frame["data"]["body"]["certainty"] > 0.45
     ):
         sess.call("rie.dialogue.say", text="Ja")
-        
+
+@inlineCallbacks        
 def key_words_simple(question = None, key_words = None):
     global sess
     
@@ -41,7 +42,6 @@ def main(session, details):
     # define question 1 together with the keywords and answers
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
-    answer_general_colors = "Great, my favorite color is also"
    
     dictionary_colors = {}
        
@@ -81,9 +81,8 @@ def main(session, details):
 
     answer_found = key_words_simple(question = question_colors, key_words = keywords_colors)
 
-    # yield session.call(
-    #     "rie.dialogue.say", text=answer_general_colors + answer_color_found
-    # )
+    answer_general_colors = "Great, my favorite color is also" + answer_found
+    yield session.call("rie.dialogue.say", text=answer_general_colors)
     
     yield session.call("rie.dialogue.say", text="Did you know that:")
     answer_string = "answer_" + answer_found
