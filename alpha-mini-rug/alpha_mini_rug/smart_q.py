@@ -29,22 +29,26 @@ def find_the_answer(answer_dictionary):
     return answers_found, answer
 
 @inlineCallbacks
-def smart_questions(session, question, answer_dictionary):
+def smart_questions(session, question, answer_dictionary, question_try_again = None, debug=False):
+    """
+    This function asks a question and waits for the user to respond.
+    It compares the user response with the answer dictionary and returns the answer.
+    """
+    
     waiting_time = 5
     number_attempts = 3
     timer = 0
     attempt = 0
 
-    question_try_again = [
-        "Sorry, can you repeat the answer?",
-        "I couldn't hear the answer, can you repeat it again?",
-        "I am not sure I can hear you, can you repeat?",
-    ]
+    if question_try_again is None:
+        question_try_again = [
+            "Sorry, can you repeat the answer?",
+            "I couldn't hear the answer, can you repeat it again?",
+            "I am not sure I can hear you, can you repeat?",
+        ]
 
     yield session.call("rie.dialogue.say", text=question)
 
-    # text = yield session.call("rie.dialogue.stt.read")
-    # print("I heard ",text)
 
     # subscribes the asr function with the input stt stream
     yield session.subscribe(listen_smart_question, "rie.dialogue.stt.stream")
@@ -52,7 +56,7 @@ def smart_questions(session, question, answer_dictionary):
     yield session.call("rie.dialogue.stt.stream")
 
     if user_response != "":
-        print("user response: ", user_response)
+        print("User response: ", user_response)
 
     # loop while user did not say goodbye or bye
 

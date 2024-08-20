@@ -2,7 +2,7 @@ from twisted.internet.defer import inlineCallbacks
 
 
 @inlineCallbacks
-def key_words(question=None, key_words=None, time=1000, debug=False):
+def key_words(session, question=None, key_words=None, time=1000, debug=False):
     """
     This function asks a question and waits for the user to respond with a keyword from the list of keywords.
 
@@ -16,12 +16,11 @@ def key_words(question=None, key_words=None, time=1000, debug=False):
         str: The keyword found in the user response.
 
     """
-    global sess
 
     # ask question
-    yield sess.call("rie.dialogue.say", text=question)
+    yield session.call("rie.dialogue.say", text=question)
     # get user input and parse it
-    user_input = yield sess.call("rie.dialogue.stt.read", time=time)
+    user_input = yield session.call("rie.dialogue.stt.read", time=time)
     user_response = ""
     if debug:
         print("The entire user input is: ")
