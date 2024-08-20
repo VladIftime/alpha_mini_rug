@@ -5,13 +5,13 @@ import base64
 
 def aruco_detect_markers(frame):
     """
-    frame: dict
+    Args:
+    frame (dictionary):
         The frame dictionary from the robot's camera stream
     Returns
-    -------
-    corners: list
+        corners: list
         The corners of the detected markers
-    ids: list
+        ids: list
         The ids of the detected markers
     """
     frame_single = frame["data"]["body.head.eyes"]

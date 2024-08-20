@@ -2,10 +2,8 @@ from random import randint
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
 
-
 user_response = ""
 answers_found = False
-
 
 def listen_smart_question(frames):
     global user_response
