@@ -15,6 +15,20 @@ def key_words(session, question=None, key_words=None, time=1000, debug=False):
         str: The keyword found in the user response.
 
     """
+    # Check if the arguments are of the correct type
+    if not isinstance(question, str):
+        raise TypeError("question is not a string")
+    if not isinstance(key_words, list):
+        raise TypeError("key_words is not a list")
+    # check if the list contains only strings
+    else:
+        for word in key_words:
+            if not isinstance(word, str):
+                raise TypeError("key_words is not a list of strings")
+    if not isinstance(time, int):
+        raise TypeError("time is not an integer")
+    if not isinstance(debug, bool):
+        raise TypeError("debug is not a boolean")
 
     # ask question
     yield session.call("rie.dialogue.say", text=question)
