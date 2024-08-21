@@ -2,11 +2,10 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 
 def collision_models():
-
+	return
 
 @inlineCallbacks
 def main(session, details):
-    
     collision_models()
     
     session.leave()
