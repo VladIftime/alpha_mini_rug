@@ -31,6 +31,16 @@ def smart_questions(session, question, answer_dictionary, question_try_again = N
     """
     This function asks a question and waits for the user to respond.
     It compares the user response with the answer dictionary and returns the answer.
+    
+    Args:
+        session (Component): The session object.
+        question (str): The question to be asked.
+        answer_dictionary (dict): A dictionary with the answers.
+        question_try_again (list): A list of questions to be asked again if the user response is not clear.
+        debug (bool): A flag to print debug information.
+    
+    Returns:
+        str: The answer found in the user response.
     """
     
     waiting_time = 5
@@ -46,7 +56,6 @@ def smart_questions(session, question, answer_dictionary, question_try_again = N
         ]
 
     yield session.call("rie.dialogue.say", text=question)
-
 
     # subscribes the asr function with the input stt stream
     yield session.subscribe(listen_smart_question, "rie.dialogue.stt.stream")
