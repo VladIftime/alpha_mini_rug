@@ -1,6 +1,5 @@
 from twisted.internet.defer import inlineCallbacks
 
-
 @inlineCallbacks
 def key_words(session, question=None, key_words=None, time=1000, debug=False):
     """
