@@ -14,6 +14,13 @@ def aruco_detect_markers(frame):
         ids: list
         The ids of the detected markers
     """
+    # check if the frame is not empty
+    if frame is None:
+        raise ValueError("The frame is empty")
+    # check if the frame is a dictionary
+    if not isinstance(frame, dict):
+        raise TypeError("The frame is not a dictionary")
+
     frame_single = frame["data"]["body.head.eyes"]
     # make sure the frame is byte-like and not a string; it's in base64
     frame_single = bytes(frame_single, "utf-8")
@@ -25,7 +32,7 @@ def aruco_detect_markers(frame):
 
     # Decode the numpy array into an image
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    
+
     # Load the dictionary that was used to generate the markers
     dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     parameters = cv2.aruco.DetectorParameters()
