@@ -54,5 +54,5 @@ def key_words(session, question=None, key_words=None, time=1000, debug=False):
             answer_found = word
             break
     if debug:
-        print("The keyword found: " + answer_found)
+        print("The keyword found: " + str(answer_found))
     return answer_found

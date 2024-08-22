@@ -2,7 +2,10 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks, Deferred
 from autobahn.twisted.util import sleep
 from alpha_mini_rug import aruco_detect_markers
+from alpha_mini_rug import key_words
+from alpha_mini_rug import smart_questions
 from follow_face import detect_face_in_frame
+from movements_test import perform_action_proportional_time
 import threading
 
 
@@ -23,7 +26,8 @@ def detect_face(frame):
 
 @inlineCallbacks
 def behavior_face(session):
-    yield session.subscribe(detect_face_in_frame, "rom.sensor.sight.stream")
+    print("call")
+    yield session.subscribe(detect_face, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
     pass
 
@@ -32,6 +36,7 @@ def behavior_face(session):
 def behavior(session):
     yield session.subscribe(detect_aruco_cards, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
+    yield session.call("rie.dialogue.say", text="Ja, ik been een appel en dat is lekker, Ja, ik been een appel en dat is lekker")
     pass
 
 
@@ -127,9 +132,12 @@ def behviour2(session):
     pass
 
 
+@inlineCallbacks
 def test_no_yield(session):
-    session.call("rie.dialogue.say", text="Ja")
-    session.call("rom.optional.behavior.play", name="BlocklyRobotDance")
+    
+    yield session.call("rom.optional.behavior.play", name="BlocklyDab", sync = False)
+    session.call("rie.dialogue.say", text="Ja, ik been een appel en dat is lekker, Ja, ik been een appel en dat is lekker")
+    
     pass
 
 
@@ -145,13 +153,15 @@ def main_parallel_test(session, details):
     thread2.join()
     print("Subscribed to the camera stream")
 
-
+# test no yield
 @inlineCallbacks
 def main_Test(session, details):
     yield test_no_yield(session)
     print("Reached the end")
+    session.leave()
 
 
+# test aruco markers
 @inlineCallbacks
 def main_Test2(session, details):
     # Try to see if we run infinite loop functions with yield what happens
@@ -159,11 +169,12 @@ def main_Test2(session, details):
     # should scan for aruco markers
     yield behavior(session)
     # should wave arms indefinitely
-    yield behviour2(session)
+    # behviour2(session)
 
     print("Reached the end")
 
 
+# test proprio
 @inlineCallbacks
 def main_Test3(session, details):
     # Test if we can read the joints
@@ -173,13 +184,93 @@ def main_Test3(session, details):
     print("Reached the end")
 
 
+# test behavior face
 @inlineCallbacks
 def main_Test4(session, details):
     # Test the face detection
     yield behavior_face(session)
     print("Reached the end")
+   
+   
+# test movements    
+@inlineCallbacks
+def main_Test5(session, details):
+    
+    # correct call
+    frames = [{"time": 100, "data": {"body.arms.left.lower.roll": -1.7, "body.arms.right.lower.roll": -1.70}},
+			  {"time": 400, "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0}}]   
+    
+    # angle out of bounds
+    # frames = [{"time": 100, "data": {"body.arms.left.lower.roll": -9, "body.arms.right.lower.roll": -1.70}},
+	# 		  {"time": 400, "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0}}]
+    
+    # invalid joint name
+    # frames = [{"time": 100, "data": {"body.arms.left.lower": -1, "body.arms.right.lower.roll": -1.70}},
+	# 		  {"time": 400, "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0}}]
 
+    
+    yield session.call("rom.optional.behavior.play", name="BlocklyStand")
+    sleep (10)
+    yield session.call("rie.dialogue.say", text = "This will be a fast move")
+    yield session.call("rom.actuator.motor.write", frames = frames, force = True)
+        
+    sleep(10)
+   
+    yield session.call("rom.optional.behavior.play", name="BlocklyStand")
+    sleep(10)
+    yield session.call("rie.dialogue.say", text = "This will be a normal move")
+    yield perform_action_proportional_time(frames)
+    
+    session.leave()
+ 
+    
+# move all joints in position 0    
+@inlineCallbacks
+def main_Test6(session, details):
+    frames0 = [{"time": 1000, "data": {"body.head.yaw": 0,
+									"body.head.roll":               0,
+									"body.head.pitch":              0,
+									"body.arms.right.upper.pitch":  0,
+									"body.arms.right.lower.roll":   0,
+									"body.arms.left.upper.pitch":   0,
+									"body.arms.left.lower.roll":    0,
+									"body.torso.yaw":               0,
+									"body.legs.right.upper.pitch":  0,
+									"body.legs.right.lower.pitch":  0,
+									"body.legs.right.foot.roll":    0,
+									"body.legs.left.upper.pitch":   0,
+									"body.legs.left.lower.pitch":   0,
+									"body.legs.left.foot.roll":     0}}]
+    session.call("rom.actuator.motor.write", frames = frames0, force=True)
 
+    session.leave()
+    
+    
+# test keywords        
+@inlineCallbacks
+def main_Test7(session, details):
+
+    question_test = "What is your favorite color?"
+    key_words_test = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
+    key_words_answer = None
+    
+    yield session.call("rie.dialogue.config.language", lang="en")
+    key_words_answer = yield key_words(session, question = question_test, key_words = key_words_test, time = 1000, debug = True)
+    
+    print(key_words_answer)
+    
+    session.leave()
+
+# test smart questions
+def main_Test8(session, details):
+    
+    question_test = question_quiz = "What is the capital of Netherlands?"
+    answers = {"amsterdam": ["amster", "dam", "amsterdam", "amsterd"]}
+    
+    smart_questions(session, question = question_test, answer_dictionary = answers, debug = True)
+    
+    session.leave()
+    
 wamp = Component(
     transports=[
         {
@@ -188,10 +279,10 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.6698e1a90f3d8a1b0bad848f",
+    realm="rie.66c6efbbafe50d23b76c0f9d",
 )
 
-wamp.on_join(main)
+wamp.on_join(main_Test7)
 
 if __name__ == "__main__":
     run([wamp])

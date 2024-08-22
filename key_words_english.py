@@ -12,7 +12,7 @@ def on_keyword(frame):
 
 
 @inlineCallbacks
-def key_words_simple(question=None, key_words=None, time=1000, debug=False):
+def key_words_simple(question=None, key_words=None, time=10000, debug=False):
     global sess
 
     # ask question
@@ -20,12 +20,10 @@ def key_words_simple(question=None, key_words=None, time=1000, debug=False):
     # get user input and parse it
     user_input = yield sess.call("rie.dialogue.stt.read", time=time)
     user_response = ""
+    
     if debug:
-        print("The entire user input is: ")
-        print(user_input)
-
-    for frame in user_input:
-        if frame["data"]["body"]["final"]:
+        print("The user input is:")
+        for frame in user_input:
             user_response = frame["data"]["body"]["text"]
 
     if debug:
@@ -51,6 +49,16 @@ def main(session, details):
     # define question 1 together with the keywords and answers
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
+    
+    user_input = yield sess.call("rie.dialogue.stt.read", time=3000)
+    
+    print(user_input)
+    
+    for frame in user_input:
+        # if (frame["data"]["body"]["final"]):
+        print(frame)
+
+    return
 
     dictionary_colors = {}
 
@@ -123,7 +131,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.669a45f50f3d8a1b0bad8b98",
+    realm="rie.66c6efbbafe50d23b76c0f9d",
 )
 
 wamp.on_join(main)
