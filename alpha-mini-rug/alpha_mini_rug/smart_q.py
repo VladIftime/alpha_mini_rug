@@ -53,6 +53,12 @@ def smart_questions(
     Returns:
         str: The answer found in the user response.
     """
+    if question_try_again is None:
+        question_try_again = [
+            "Sorry, can you repeat the answer?",
+            "I couldn't hear the answer, can you repeat it again?",
+            "I am not sure I can hear you, can you repeat?",
+        ]
     # Check if the arguments are of the correct type
     if not isinstance(question, str):
         raise TypeError("question is not a string")
@@ -86,13 +92,6 @@ def smart_questions(
 
     timer = 0
     attempt = 0
-
-    if question_try_again is None:
-        question_try_again = [
-            "Sorry, can you repeat the answer?",
-            "I couldn't hear the answer, can you repeat it again?",
-            "I am not sure I can hear you, can you repeat?",
-        ]
 
     yield session.call("rie.dialogue.say", text=question)
 

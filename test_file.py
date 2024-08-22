@@ -9,6 +9,10 @@ from movements_test import perform_action_proportional_time
 import threading
 
 
+def detect_face(frame):
+    pass
+
+
 def detect_aruco_cards(frame):
     corners, ids = aruco_detect_markers(frame)
     if ids is not None:
@@ -186,9 +190,40 @@ def main_Test3(session, details):
 
 # test behavior face
 @inlineCallbacks
+def follow_faces(session):
+    """Function to subscribe to the robot's camera stream and follow a detected face
+
+    Args:
+        session (Component):
+        The session object for the connection to the robot
+
+    """
+
+    # Wrapper function to pass the session
+    def center_face_wrapper(frame):
+        center_face(session, frame)
+        pass
+
+    # Subscribe to the camera stream
+    yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
+    yield session.call("rom.sensor.sight.stream")
+    print("Subscribed to the camera stream")
+    pass
+
+
+@inlineCallbacks
 def main_Test4(session, details):
     # Test the face detection
-    yield behavior_face(session)
+    frames = [
+        {
+            "time": 500,
+            "data": {
+                "body.head.yaw": 0,
+            },
+        },
+    ]
+    yield session.call("rom.actuator.motor.write", frames=frames, force=True, sync=True)
+    yield follow_face(session)
     print("Reached the end")
    
    
