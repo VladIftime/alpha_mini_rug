@@ -4,20 +4,20 @@ from twisted.internet.defer import inlineCallbacks
 # dictionary of joint angles 
 # joint name: (min_angle, max_angle, minimum time from 0 to min or max)":
 joints_dic = {
-	"body.head.yaw":                (-0.874, 0.874, 300), 	# 0.3
-	"body.head.roll":               (-0.174, 0.174, 200), 	# 0.2
-	"body.head.pitch":              (-0.174, 0.174, 200), 	# 0.2
-	"body.arms.right.upper.pitch":  (-2.59, 1.59, 800),		# 0.8 
-	"body.arms.right.lower.roll":   (-1.74, 0.000064, 600), # 0.6
-	"body.arms.left.upper.pitch":   (-2.59, 1.59, 800),		# 0.8
-	"body.arms.left.lower.roll":    (-1.74, 0.000064, 600),	# 0.6
-	"body.torso.yaw":               (-0.874, 0.874, 500),	# 0.5
-	"body.legs.right.upper.pitch":  (-1.74, 1.74, 800),		# 0.8 + add warning about falling somehow
-	"body.legs.right.lower.pitch":  (-1.74, 1.74, 600),		# 0.6 + add warning about falling somehow
-	"body.legs.right.foot.roll":    (-0.849, 0.249, 500),	# 0.5 + add warning about falling somehow
-	"body.legs.left.upper.pitch":   (-1.74, 1.74, 800),		# 0.8 + add warning about falling somehow
-	"body.legs.left.lower.pitch":   (-1.74, 1.74, 600),		# 0.6 + add warning about falling somehow
-	"body.legs.left.foot.roll":     (-0.849, 0.249, 500)    # 0.5 + add warning about falling somehow
+	"body.head.yaw":                (-0.874, 0.874, 600), 	# 0.3
+	"body.head.roll":               (-0.174, 0.174, 400), 	# 0.2
+	"body.head.pitch":              (-0.174, 0.174, 400), 	# 0.2
+	"body.arms.right.upper.pitch":  (-2.59, 1.59, 1800),		# 0.8 
+	"body.arms.right.lower.roll":   (-1.74, 0.000064, 1200), # 0.6
+	"body.arms.left.upper.pitch":   (-2.59, 1.59, 1600),		# 0.8
+	"body.arms.left.lower.roll":    (-1.74, 0.000064, 1200),	# 0.6
+	"body.torso.yaw":               (-0.874, 0.874, 1000),	# 0.5
+	"body.legs.right.upper.pitch":  (-1.74, 1.74, 1600),		# 0.8 + add warning about falling somehow
+	"body.legs.right.lower.pitch":  (-1.74, 1.74, 1200),		# 0.6 + add warning about falling somehow
+	"body.legs.right.foot.roll":    (-0.849, 0.249, 1000),	# 0.5 + add warning about falling somehow
+	"body.legs.left.upper.pitch":   (-1.74, 1.74, 1600),		# 0.8 + add warning about falling somehow
+	"body.legs.left.lower.pitch":   (-1.74, 1.74, 1200),		# 0.6 + add warning about falling somehow
+	"body.legs.left.foot.roll":     (-0.849, 0.249, 1000)    # 0.5 + add warning about falling somehow
 }
 
 # check if the set angles of one frame are withing boundaries
@@ -79,7 +79,7 @@ def perform_action_standard_time(session, frames, mode = "linear", sync = True, 
 		else:
 			frame2["time"] = frame1["time"] + 1000       
 			
-	session.call("rom.actuator.motor.write", frames, mode, sync, force=True)
+	session.call("rom.actuator.motor.write", frames = frames, mode = mode, sync = sync, force=True)
 
 # the minimum time between any movements is proportional to the angle of movement
 @inlineCallbacks
@@ -138,29 +138,53 @@ def perform_action_proportional_time(session, frames, mode = "linear", sync = Tr
 	# print(sync)
 	# print(force)         
 	print("call")
-	session.call("rom.actuator.motor.write", frames, mode, sync, force=True)
-	
-	
-# def main():
-# 	frames = [{"time": None, "data": {"body.arms.left.lower.roll": -1.70, "body.arms.right.lower.roll": -1.70}},
-#  			  {"time": None, "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0}}]
-		
-# 	perform_action_proportional_time(frames)
+	session.call("rom.actuator.motor.write", frames = frames, mode = mode, sync = sync, force=True)
 
-# if __name__ == "__main__":
-# 	main()
+
+def check_collisions(frame_joints_dic):
+	for joint in frame_joints_dic:
+    
+		if not joint in joints_dic:
+			raise ValueError(joint + " is not a valid joint name")
+		else:
+			if not joints_dic[joint][0] <= frame_joints_dic[joint] <= joints_dic[joint][1]:
+				raise ValueError("The angle selected for joint " + joint + " is out of bounds")
+	
+	
 
 @inlineCallbacks
 def main(session, details):
 	
-    frames = [{"time": 500, "data": {"body.arms.left.lower.roll": -1.70, "body.arms.right.lower.roll": -1.70}},
+	frames = [{"time": 500, "data": {"body.arms.left.lower.roll": -1.70, "body.arms.right.lower.roll": -1.70}},
 			  {"time": 2000, "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0}}]
+ 
+	frames0 = [{"time": 1000, "data": {"body.head.yaw": 0,
+									"body.head.roll":               0,
+									"body.head.pitch":              0,
+									"body.arms.right.upper.pitch":  0,
+									"body.arms.right.lower.roll":   0,
+									"body.arms.left.upper.pitch":   0,
+									"body.arms.left.lower.roll":    0,
+									"body.torso.yaw":               0,
+									"body.legs.right.upper.pitch":  0,
+									"body.legs.right.lower.pitch":  0,
+									"body.legs.right.foot.roll":    0,
+									"body.legs.left.upper.pitch":   0,
+									"body.legs.left.lower.pitch":   0,
+									"body.legs.left.foot.roll":     0}}]
 	
-    # yield perform_action_proportional_time(session, frames)
-    print("call")
-    yield session.call("rom.actuator.motor.write", frames, force=True)
+	frames = yield session.call("rom.sensor.proprio.read")
+	print("Current engines status:")
+	print(frames[0]["data"].items())
+	print("")
+ 
+	session.call("rom.actuator.motor.write", frames = frames0, force=True)
 	
-    session.leave()
+	
+	# yield perform_action_proportional_time(session, frames)
+	# yield session.call("rom.actuator.motor.write", frames = frames, force=True)
+	
+	session.leave()
 
 wamp = Component(
 	transports=[{
@@ -168,10 +192,10 @@ wamp = Component(
 		"serializers": ["json"],
 		"max_retries": 0
 	}],
-	realm="rie.66c5c090afe50d23b76c099e",
+	realm="rie.66c6efbbafe50d23b76c0f9d",
 )
 
 wamp.on_join(main)
 
 if __name__ == "__main__":
-    run(wamp)
+	run(wamp)
