@@ -12,7 +12,7 @@ def on_keyword(frame):
 
 
 @inlineCallbacks
-def key_words_simple(question=None, key_words=None, time=10000, debug=False):
+def key_words_simple(question=None, key_words=None, time=5000, debug=False):
     global sess
 
     # ask question
@@ -20,26 +20,34 @@ def key_words_simple(question=None, key_words=None, time=10000, debug=False):
     # get user input and parse it
     user_input = yield sess.call("rie.dialogue.stt.read", time=time)
     user_response = ""
+    answer_found = None
     
     if debug:
         print("The user input is:")
         for frame in user_input:
             user_response = frame["data"]["body"]["text"]
 
+    for frame in user_input:
+            user_response = frame["data"]["body"]["text"]
+            if user_response != "":
+                for word in user_response.split():
+                    word = word.lower()
+                    print(word)
+                if word in key_words and answer_found is None:
+                    answer_found = word
+                    break
+    
     if debug:
-        print("The user response is : " + user_response)
-    answer_found = None
-
-    for word in user_response.split():
-        word = word.lower()
-        print(word)
-        if word in key_words and answer_found is None:
-            answer_found = word
-            break
-    if debug:
-        print("The keyword found: " + answer_found)
+        if answer_found == None:
+            print("No answer found")
+        else:    
+            print("The keyword found: " + answer_found)
+    
     return answer_found
 
+def keywords_listen(frame):
+    print("hello")
+    print(frame["data"]["body"])
 
 @inlineCallbacks
 def main(session, details):
@@ -50,15 +58,19 @@ def main(session, details):
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
     
-    user_input = yield sess.call("rie.dialogue.stt.read", time=3000)
+    yield session.subscribe(keywords_listen, "rie.dialogue.keyword.stream")
     
-    print(user_input)
-    
-    for frame in user_input:
-        # if (frame["data"]["body"]["final"]):
-        print(frame)
 
-    return
+def second_main(session, details):
+    # user_input = yield sess.call("rie.dialogue.stt.read", time=3000)
+    
+    # print(user_input)
+    
+    # for frame in user_input:
+    #     # if (frame["data"]["body"]["final"]):
+    #     print(frame)
+
+    # return
 
     dictionary_colors = {}
 
@@ -110,15 +122,33 @@ def main(session, details):
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
 
     answer_found = yield key_words_simple(
-        question=question_colors, key_words=keywords_colors, time=5000
+        question=question_colors, key_words=keywords_colors, time=5000, debug = True
     )
+    
+    if answer_found != None:
+        answer_general_colors = "Great, my favorite color is also" + answer_found
+        yield session.call("rie.dialogue.say", text=answer_general_colors)
 
-    answer_general_colors = "Great, my favorite color is also" + answer_found
-    yield session.call("rie.dialogue.say", text=answer_general_colors)
+        yield session.call("rie.dialogue.say", text="Did you know that:")
+        answer_string = "answer_" + answer_found
+        yield session.call("rie.dialogue.say", text=dictionary_colors[answer_string])
+        
+    else:
+        yield session.call("rie.dialogue.say", text="Sorry I didn't understand the answer. Let's try again.")
+        
+        answer_found = yield key_words_simple(
+            question=question_colors, key_words=keywords_colors, time=5000, debug = True
+        )
+        
+        if answer_found == None:
+            yield session.call("rie.dialogue.say", text="It seems I can't hear very well today, sorry. Maybe increase the listening time.")
+        answer_general_colors = "Great, my favorite color is also" + answer_found
+        yield session.call("rie.dialogue.say", text=answer_general_colors)
 
-    yield session.call("rie.dialogue.say", text="Did you know that:")
-    answer_string = "answer_" + answer_found
-    yield session.call("rie.dialogue.say", text=dictionary_colors[answer_string])
+        yield session.call("rie.dialogue.say", text="Did you know that:")
+        answer_string = "answer_" + answer_found
+        yield session.call("rie.dialogue.say", text=dictionary_colors[answer_string])
+    
 
     session.leave()
 
