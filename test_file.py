@@ -2,30 +2,20 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks, Deferred
 from autobahn.twisted.util import sleep
 from alpha_mini_rug import aruco_detect_markers
-from follow_face import detect_face_in_frame
+
+# from follow_face import detect_face_in_frame
+from follow_face import follow_face
 import threading
+
+
+def detect_face(frame):
+    pass
 
 
 def detect_aruco_cards(frame):
     corners, ids = aruco_detect_markers(frame)
     if ids is not None:
         print("ids=", ids)
-
-
-def detect_face(frame):
-    top_left, bottom_right = detect_face_in_frame(frame)
-    if top_left is not None:
-        print("Face detected")
-        print("Top left: ", top_left)
-        print("Bottom right: ", bottom_right)
-    pass
-
-
-@inlineCallbacks
-def behavior_face(session):
-    yield session.subscribe(detect_face_in_frame, "rom.sensor.sight.stream")
-    yield session.call("rom.sensor.sight.stream")
-    pass
 
 
 @inlineCallbacks
@@ -174,9 +164,40 @@ def main_Test3(session, details):
 
 
 @inlineCallbacks
+def follow_faces(session):
+    """Function to subscribe to the robot's camera stream and follow a detected face
+
+    Args:
+        session (Component):
+        The session object for the connection to the robot
+
+    """
+
+    # Wrapper function to pass the session
+    def center_face_wrapper(frame):
+        center_face(session, frame)
+        pass
+
+    # Subscribe to the camera stream
+    yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
+    yield session.call("rom.sensor.sight.stream")
+    print("Subscribed to the camera stream")
+    pass
+
+
+@inlineCallbacks
 def main_Test4(session, details):
     # Test the face detection
-    yield behavior_face(session)
+    frames = [
+        {
+            "time": 500,
+            "data": {
+                "body.head.yaw": 0,
+            },
+        },
+    ]
+    yield session.call("rom.actuator.motor.write", frames=frames, force=True, sync=True)
+    yield follow_face(session)
     print("Reached the end")
 
 
@@ -188,10 +209,10 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.6698e1a90f3d8a1b0bad848f",
+    realm="rie.66c6eff2afe50d23b76c0fa0",
 )
 
-wamp.on_join(main)
+wamp.on_join(main_Test4)
 
 if __name__ == "__main__":
     run([wamp])
