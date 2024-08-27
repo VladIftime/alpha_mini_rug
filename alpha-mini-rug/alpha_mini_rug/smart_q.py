@@ -9,7 +9,6 @@ answers_found = False
 def listen_smart_question(frames):
     global user_response
     if frames["data"]["body"]["final"]:
-        print(frames["data"]["body"]["text"])
         user_response = frames["data"]["body"]["text"]
 
 
@@ -19,7 +18,6 @@ def find_the_answer(answer_dictionary):
     for key in answer_dictionary.keys():  # It needs to search all values of the dictioinary, so all lists of strings and return the key
         for value in answer_dictionary[key]:
             if value in user_response:
-                print("found the answer")
                 answers_found = True
                 answer = key
 
@@ -80,8 +78,8 @@ def smart_questions(
         raise TypeError("question_try_again is not a list")
     # check if the list contains only strings
     else:
-        for question in question_try_again:
-            if not isinstance(question, str):
+        for questionz in question_try_again:
+            if not isinstance(questionz, str):
                 raise TypeError("question_try_again is not a list of strings")
     if not isinstance(waiting_time, int):
         raise TypeError("waiting_time is not an integer")
@@ -100,7 +98,7 @@ def smart_questions(
     # calls the stream. From here, the robot prints each 'final' sentence
     yield session.call("rie.dialogue.stt.stream")
 
-    if user_response != "":
+    if user_response != "" and debug:
         print("User response: ", user_response)
 
     # loop while user did not say goodbye or bye

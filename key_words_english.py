@@ -47,7 +47,7 @@ def key_words_simple(question=None, key_words=None, time=5000, debug=False):
 
 def keywords_listen(frame):
     print("hello")
-    print(frame["data"]["body"])
+    print(frame)
 
 @inlineCallbacks
 def main(session, details):
@@ -58,7 +58,7 @@ def main(session, details):
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
     
-    yield session.subscribe(keywords_listen, "rie.dialogue.keyword.stream")
+    yield session.subscribe(keywords_listen, "rie.dialogue.stt.stream")
     
 
 def second_main(session, details):
@@ -161,7 +161,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66c6efbbafe50d23b76c0f9d",
+    realm="rie.66c6eff2afe50d23b76c0fa0",
 )
 
 wamp.on_join(main)
