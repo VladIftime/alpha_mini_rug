@@ -99,6 +99,8 @@ def keywords_listen(frame):
     # print(frame)
     raw_input.appendleft(frame["data"]["body"]["text"])
     # print(raw_input)
+    print("hello")
+    print(frame)
 
 @inlineCallbacks
 def main(session, details):
@@ -220,7 +222,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66c6efbbafe50d23b76c0f9d",
+    realm="rie.66c6eff2afe50d23b76c0fa0",
 )
 
 wamp.on_join(main)
