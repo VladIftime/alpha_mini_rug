@@ -299,10 +299,12 @@ def main_Test7(session, details):
 # test smart questions
 def main_Test8(session, details):
     
-    question_test = question_quiz = "What is the capital of Netherlands?"
+    question_test = "What is the capital of Netherlands?"
     answers = {"amsterdam": ["amster", "dam", "amsterdam", "amsterd"]}
     
-    smart_questions(session, question = question_test, answer_dictionary = answers, debug = True)
+    answer = yield smart_questions(session, question = question_test, answer_dictionary = answers, debug = True)
+    
+    print(answer)
     
     session.leave()
     
@@ -317,7 +319,7 @@ wamp = Component(
     realm="rie.66c6efbbafe50d23b76c0f9d",
 )
 
-wamp.on_join(main_Test7)
+wamp.on_join(main_Test8)
 
 if __name__ == "__main__":
     run([wamp])

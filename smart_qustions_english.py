@@ -1,16 +1,25 @@
 from random import randint
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, Deferred
 from autobahn.twisted.util import sleep
+from autobahn.twisted.component import Component, run
+from collections import deque
 
-user_response = ""
+# user_response = ""
 answers_found = False
 
+raw_input = deque(maxlen=20)
 
-def listen_smart_question(frames):
-    global user_response
-    if frames["data"]["body"]["final"]:
-        print(frames["data"]["body"]["text"])
-        user_response = frames["data"]["body"]["text"]
+def listen_smart_question(frame):
+    # global user_response
+    # if frames["data"]["body"]["final"]:
+    #     print(frames["data"]["body"]["text"])
+    #     user_response = frames["data"]["body"]["text"]
+         
+    global raw_input
+    # print("hello")
+    # print(frame)
+    raw_input.appendleft(frame["data"]["body"]["text"])
+    # print(raw_input)    
 
 
 def find_the_answer(answer_dictionary):
@@ -18,7 +27,7 @@ def find_the_answer(answer_dictionary):
     answer = None
     for key in answer_dictionary.keys():  # It needs to search all values of the dictioinary, so all lists of strings and return the key
         for value in answer_dictionary[key]:
-            if value in user_response:
+            if value in raw_input:
                 print("found the answer")
                 answers_found = True
                 answer = key
@@ -53,6 +62,8 @@ def smart_questions(
     Returns:
         str: The answer found in the user response.
     """
+    
+    print(question)
     if question_try_again is None:
         question_try_again = [
             "Sorry, can you repeat the answer?",
@@ -81,8 +92,8 @@ def smart_questions(
         raise TypeError("question_try_again is not a list")
     # check if the list contains only strings
     else:
-        for question in question_try_again:
-            if not isinstance(question, str):
+        for question_test in question_try_again:
+            if not isinstance(question_test, str):
                 raise TypeError("question_try_again is not a list of strings")
     if not isinstance(waiting_time, int):
         raise TypeError("waiting_time is not an integer")
@@ -93,13 +104,21 @@ def smart_questions(
 
     timer = 0
     attempt = 0
+    global raw_input
+    user_response = ""
 
+    print("i need this call")
+    print(question)
+    
     yield session.call("rie.dialogue.say", text=question)
 
     # subscribes the asr function with the input stt stream
     yield session.subscribe(listen_smart_question, "rie.dialogue.stt.stream")
     # calls the stream. From here, the robot prints each 'final' sentence
     yield session.call("rie.dialogue.stt.stream")
+    
+    sleep(5)
+    user_response = raw_input
 
     if user_response != "":
         print("User response: ", user_response)
@@ -124,3 +143,33 @@ def smart_questions(
                 yield session.call(
                     "rie.dialogue.say", text=question_try_again[randint(0, 2)]
                 )
+
+
+
+@inlineCallbacks
+def main_Test8(session, details):
+    
+    question_test = "What is the capital of Netherlands?"
+    answers = {"amsterdam": ["amster", "dam", "amsterdam", "amsterd"]}
+    
+    answer = yield smart_questions(session, question = question_test, answer_dictionary = answers, debug = True)
+    
+    print(answer)
+    
+    session.leave()
+    
+wamp = Component(
+    transports=[
+        {
+            "url": "ws://wamp.robotsindeklas.nl",
+            "serializers": ["json"],
+            "max_retries": 0,
+        }
+    ],
+    realm="rie.66c6efbbafe50d23b76c0f9d",
+)
+
+wamp.on_join(main_Test8)
+
+if __name__ == "__main__":
+    run([wamp])

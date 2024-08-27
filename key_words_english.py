@@ -1,6 +1,10 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
+from autobahn.twisted.util import sleep
+from collections import deque
 
+# global variables
+raw_input = deque(maxlen=20)
 
 def on_keyword(frame):
     global sess
@@ -21,6 +25,8 @@ def key_words_simple(question=None, key_words=None, time=5000, debug=False):
     user_input = yield sess.call("rie.dialogue.stt.read", time=time)
     user_response = ""
     answer_found = None
+    
+    print(user_input)
     
     if debug:
         print("The user input is:")
@@ -45,9 +51,54 @@ def key_words_simple(question=None, key_words=None, time=5000, debug=False):
     
     return answer_found
 
+
+@inlineCallbacks
+def key_words_simple_stream(question=None, key_words=None, time=5000, debug=False):
+    global sess
+    global raw_input
+
+    # ask question
+    yield sess.call("rie.dialogue.say", text=question)
+    # get user input and parse it
+    # user_input = yield sess.call("rie.dialogue.stt.read", time=time)
+    print("function before sleep")
+    print(raw_input)
+    yield sleep(2)
+    print("function after sleep")
+    print(raw_input)
+    user_input = raw_input
+    user_response = ""
+    answer_found = None
+    print(user_input)
+    
+    if debug:
+        print("The user input is:")
+        for frame in user_input:
+            print(frame)
+
+    for user_response in user_input:
+            if user_response != "":
+                for word in user_response.split():
+                    word = word.lower()
+                    print(word)
+                if word in key_words and answer_found is None:
+                    answer_found = word
+                    break
+    
+    if debug:
+        if answer_found == None:
+            print("No answer found")
+        else:    
+            print("The keyword found: " + answer_found)
+    
+    return answer_found
+
 def keywords_listen(frame):
-    print("hello")
-    print(frame["data"]["body"])
+    global raw_input
+    # print("hello")
+    # print(frame)
+    raw_input.appendleft(frame["data"]["body"]["text"])
+    # print(raw_input)
 
 @inlineCallbacks
 def main(session, details):
@@ -58,8 +109,14 @@ def main(session, details):
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
     
-    yield session.subscribe(keywords_listen, "rie.dialogue.keyword.stream")
+    yield session.subscribe(keywords_listen, "rie.dialogue.stt.stream")
+    yield session.call("rie.dialogue.stt.stream")
     
+    answer = yield key_words_simple_stream(question=question_colors, key_words=keywords_colors, time=5000, debug=False)
+    
+    print(answer)
+    
+    session.leave()
 
 def second_main(session, details):
     # user_input = yield sess.call("rie.dialogue.stt.read", time=3000)
@@ -142,6 +199,8 @@ def second_main(session, details):
         
         if answer_found == None:
             yield session.call("rie.dialogue.say", text="It seems I can't hear very well today, sorry. Maybe increase the listening time.")
+            session.leave()
+                    
         answer_general_colors = "Great, my favorite color is also" + answer_found
         yield session.call("rie.dialogue.say", text=answer_general_colors)
 
