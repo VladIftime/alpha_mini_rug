@@ -24,11 +24,13 @@ joints_dic = {
 
 def check_angle_set_value(frame_joints_dic):
     """ 
-        Check if the name of the joints are specified correctly and the 
-        set angles are within the hardware boundaries
+    Check if the name of the joints are specified correctly and the set angles are within the hardware boundaries
+    
+    Args:
+        frame_joints_dic (dict): Dictionary of all joint names and angle limits
         
-        Args:
-            frame_joints_dic (dict): 
+    Returns:
+        None    
     """
     for joint in frame_joints_dic:
         if not joint in joints_dic:
@@ -68,14 +70,14 @@ def perform_movement(
     This function performs a movement with the robot's joints. The time of each frame is calculated based on the proportional time of the movement.
 
     Args:
-                session (Component): The session object.
-                frames (list): A list of dictionaries with the time and data of the joints to be moved.
-                mode (str): The mode of the movement. Choose one of the following: "linear", "last", "none".
-                sync (bool): A flag to synchronize the movement of the joints.
-                force (bool): A flag to force the movement of the joints.
+        session (Component): The session object.
+        frames (list): A list of dictionaries with the time and data of the joints to be moved.
+        mode (str): The mode of the movement. Choose one of the following: "linear", "last", "none".
+        sync (bool): A flag to synchronize the movement of the joints.
+        force (bool): A flag to force the movement of the joints.
 
-        Returns:
-                None
+    Returns:
+        None
     """
     
     # check if the arguments are of the correct type
@@ -88,14 +90,11 @@ def perform_movement(
     if not isinstance(force, bool):
         raise TypeError('force is not a boolean')
 
-    # check the joints and angles of the first frame
-    check_angle_set_value(frames[0]["data"])
-
     # get the joints angle at this time
     current_position = yield session.call("rom.sensor.proprio.read")
-    # print(current_position[0]["data"])
 
-    # check the time set of the first frame
+    # check the joints name, angles and times
+    check_angle_set_value(frames[0]["data"])
     for joint, target_position in frames[0]["data"].items():
         minimum_required_time = calculate_required_time(
             current_position[0]["data"][joint],
@@ -115,7 +114,6 @@ def perform_movement(
             )
             frames[0]["time"] = minimum_required_time
 
-    # check the time set for the following frames
     for idx in range(len(frames) - 1):
         frame1 = frames[idx]
         frame2 = frames[idx + 1]
@@ -140,5 +138,4 @@ def perform_movement(
             )
             frame2["time"] = minimum_required_time
 
-    # call the motor function and perform the movement with the adjusted time
     session.call("rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True)
