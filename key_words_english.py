@@ -4,7 +4,8 @@ from autobahn.twisted.util import sleep
 from collections import deque
 
 # global variables
-raw_input = deque(maxlen=20)
+from typing import Deque
+raw_input: Deque = deque(maxlen=20)
 
 def on_keyword(frame):
     global sess
