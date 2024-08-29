@@ -1,52 +1,32 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 
-
-# dictionary of joint angles
-# joint name: (min_angle, max_angle, minimum time from 0 to min or max)":
+''' 
+    Dictionary of joint angles
+    joint name: (min_angle, max_angle, minimum time to perform a full movement from min to max)":
+'''
 joints_dic = {
-    "body.head.yaw": (-0.874, 0.874, 600),  # 0.3
-    "body.head.roll": (-0.174, 0.174, 400),  # 0.2
-    "body.head.pitch": (-0.174, 0.174, 400),  # 0.2
-    "body.arms.right.upper.pitch": (-2.59, 1.59, 1800),  # 0.8
-    "body.arms.right.lower.roll": (-1.74, 0.000064, 1200),  # 0.6
-    "body.arms.left.upper.pitch": (-2.59, 1.59, 1600),  # 0.8
-    "body.arms.left.lower.roll": (-1.74, 0.000064, 1200),  # 0.6
-    "body.torso.yaw": (-0.874, 0.874, 1000),  # 0.5
-    "body.legs.right.upper.pitch": (
-        -1.74,
-        1.74,
-        1600,
-    ),  # 0.8 + add warning about falling somehow
-    "body.legs.right.lower.pitch": (
-        -1.74,
-        1.74,
-        1200,
-    ),  # 0.6 + add warning about falling somehow
-    "body.legs.right.foot.roll": (
-        -0.849,
-        0.249,
-        1000,
-    ),  # 0.5 + add warning about falling somehow
-    "body.legs.left.upper.pitch": (
-        -1.74,
-        1.74,
-        1600,
-    ),  # 0.8 + add warning about falling somehow
-    "body.legs.left.lower.pitch": (
-        -1.74,
-        1.74,
-        1200,
-    ),  # 0.6 + add warning about falling somehow
-    "body.legs.left.foot.roll": (
-        -0.849,
-        0.249,
-        1000,
-    ),  # 0.5 + add warning about falling somehow
+    "body.head.yaw": (-0.874, 0.874, 600), 
+    "body.head.roll": (-0.174, 0.174, 400), 
+    "body.head.pitch": (-0.174, 0.174, 400),
+    "body.arms.right.upper.pitch": (-2.59, 1.59, 1800),
+    "body.arms.right.lower.roll": (-1.74, 0.000064, 1200),
+    "body.arms.left.upper.pitch": (-2.59, 1.59, 1600),
+    "body.arms.left.lower.roll": (-1.74, 0.000064, 1200),
+    "body.torso.yaw": (-0.874, 0.874, 1000),
+    "body.legs.right.upper.pitch": (-1.74, 1.74, 1600),
+    "body.legs.right.lower.pitch": (-1.74, 1.74, 1200), 
+    "body.legs.right.foot.roll": (-0.849, 0.249, 1000), 
+    "body.legs.left.upper.pitch": (-1.74, 1.74, 1600), 
+    "body.legs.left.lower.pitch": (-1.74, 1.74, 1200), 
+    "body.legs.left.foot.roll": (-0.849, 0.249, 1000),
 }
 
-
 def check_angle_set_value(frame_joints_dic):
+    ''' 
+        Check if the name of the joints are specified correctly and the 
+        set angles are within the hardware boundaries  
+    '''
     for joint in frame_joints_dic:
         if not joint in joints_dic:
             raise ValueError(joint + " is not a valid joint name")
@@ -60,8 +40,12 @@ def check_angle_set_value(frame_joints_dic):
                     "The angle selected for joint " + joint + " is out of bounds"
                 )
 
-
 def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_time):
+    ''' 
+        Check if the set time is too quick and adjust it proportional to the angle of movement
+        
+        Return: the proportional time in ms
+    '''
     # calculate the total range of motion
     total_range = abs(max_angle - min_angle)
 
@@ -73,8 +57,6 @@ def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_t
 
     return proportional_time
 
-
-# the minimum time between any movements is proportional to the angle of movement
 @inlineCallbacks
 def perform_movement(
     session, frames, mode="linear", sync=True, force=False
@@ -92,27 +74,18 @@ def perform_movement(
         Returns:
                 None
     """
+    
+    # check if the arguments are of the correct type
     if not isinstance(frames, list) and all(isinstance(item, dict) for item in frames):
-        raise TypeError(
-            'frames is not a list of tuples, it needs to follow the structure [{"time": (int), "data": {name_joints (string): position_joint (float), ...}}'
-        )
-
+        raise TypeError('frames is not a list of tuples')
     if not isinstance(mode, str):
-        raise TypeError(
-            'mode is not a string, choose one of the following "linear", "last", "none"'
-        )
-
+        raise TypeError('mode is not a string')
     if not isinstance(sync, bool):
-        raise TypeError(
-            "sync is not a boolean, choose one of the following True, False"
-        )
-
+        raise TypeError('sync is not a boolean')
     if not isinstance(force, bool):
-        raise TypeError(
-            "force is not a boolean, choose one of the following True, False"
-        )
+        raise TypeError('force is not a boolean')
 
-        # check the joints and angles of the first frame
+    # check the joints and angles of the first frame
     check_angle_set_value(frames[0]["data"])
 
     # get the joints angle at this time
@@ -130,7 +103,6 @@ def perform_movement(
         )
 
         minimum_required_time = round(minimum_required_time, 2)
-        print(minimum_required_time)
         if frames[0]["time"] == None or minimum_required_time > frames[0]["time"]:
             print(
                 "The time of frame 0 was changed from "
@@ -140,6 +112,7 @@ def perform_movement(
             )
             frames[0]["time"] = minimum_required_time
 
+    # check the time set for the following frames
     for idx in range(len(frames) - 1):
         frame1 = frames[idx]
         frame2 = frames[idx + 1]
@@ -164,6 +137,5 @@ def perform_movement(
             )
             frame2["time"] = minimum_required_time
 
-    session.call(
-        "rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True
-    )
+    # call the motor function and perform the movement with the adjusted time
+    session.call("rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True)

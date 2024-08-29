@@ -24,7 +24,7 @@ def key_words(session,
     global debug_flag
     global key_words_list
     
-     # Check if the arguments are of the correct type
+     # check if the arguments are of the correct type
     if not isinstance(question, str):
         raise TypeError("question is not a string")
     if not isinstance(key_words, list):
