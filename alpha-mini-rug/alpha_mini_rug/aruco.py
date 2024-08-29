@@ -14,23 +14,19 @@ def aruco_detect_markers(frame):
         ids: list
         The ids of the detected markers
     """
-    # check if the frame is not empty
     if frame is None:
         raise ValueError("The frame is empty")
-    # check if the frame is a dictionary
     if not isinstance(frame, dict):
         raise TypeError("The frame is not a dictionary")
 
     frame_single = frame["data"]["body.head.eyes"]
-    # make sure the frame is byte-like and not a string; it's in base64
+
     frame_single = bytes(frame_single, "utf-8")
-    # Decode the base64 string
+
     image_data = base64.b64decode(frame_single)
 
-    # Convert the decoded bytes to a numpy array
     nparr = np.frombuffer(image_data, np.uint8)
 
-    # Decode the numpy array into an image
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     # Load the dictionary that was used to generate the markers
@@ -38,7 +34,6 @@ def aruco_detect_markers(frame):
     parameters = cv2.aruco.DetectorParameters()
     detector = cv2.aruco.ArucoDetector(dictionary, parameters)
 
-    # Detect the markers in the image
     corners, ids, rejectedImgPoints = detector.detectMarkers(image)
 
     return corners, ids
