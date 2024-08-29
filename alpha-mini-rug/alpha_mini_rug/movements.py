@@ -27,7 +27,8 @@ def check_angle_set_value(frame_joints_dic):
         Check if the name of the joints are specified correctly and the 
         set angles are within the hardware boundaries
         
-        Args:  
+        Args:
+            frame_joints_dic (dict): 
     """
     for joint in frame_joints_dic:
         if not joint in joints_dic:

@@ -3,7 +3,6 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
 
 user_response = ""
-answers_found = False
 
 @inlineCallbacks
 def smart_questions(
@@ -67,8 +66,8 @@ def smart_questions(
         raise TypeError("question_try_again is not a list")
     # check if the list contains only strings
     else:
-        for question in question_try_again:
-            if not isinstance(question, str):
+        for questions in question_try_again:
+            if not isinstance(questions, str):
                 raise TypeError("question_try_again is not a list of strings")
     if not isinstance(waiting_time, int):
         raise TypeError("waiting_time is not an integer")
@@ -92,8 +91,8 @@ def smart_questions(
 
     # loop while user did not say goodbye/bye or number of attempts was reached
     while True:
-        found_answer, answer = find_the_answer(answer_dictionary)
-        if found_answer:
+        answer_found, answer = find_the_answer(answer_dictionary)
+        if answer_found:
             yield session.call("rie.dialogue.stt.close")
             return answer
 
@@ -116,6 +115,12 @@ def smart_questions(
 def listen_smart_question(frames):
     """
     Open a stream to listen to the user
+    
+    Args:
+        None
+    
+    Return:
+        None
     """
     global user_response
     
@@ -128,18 +133,19 @@ def find_the_answer(answer_dictionary):
     Searches all values of the dictionary, so all lists of strings
 
     Args:
-        answer_dictionary (_type_): _description_
+        answer_dictionary (dict): The dictionary of answers
     
-    Return: The answer found in the user response and the answer key    
-        
+    Return: 
+        answer_found (str): The answer found in the user response   
+        answer_key (str): The answer key corresponding to the answer_found
     """
-    global answers_found
+    answer_found = False
     answer_key = None
     
     for key in answer_dictionary.keys():  
         for value in answer_dictionary[key]:
             if value in user_response:
-                answers_found = True
+                answer_found = True
                 answer_key = key
 
-    return answers_found, answer_key
+    return answer_found, answer_key
