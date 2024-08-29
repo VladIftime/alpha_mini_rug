@@ -23,10 +23,12 @@ joints_dic = {
 }
 
 def check_angle_set_value(frame_joints_dic):
-    ''' 
+    """ 
         Check if the name of the joints are specified correctly and the 
-        set angles are within the hardware boundaries  
-    '''
+        set angles are within the hardware boundaries
+        
+        Args:  
+    """
     for joint in frame_joints_dic:
         if not joint in joints_dic:
             raise ValueError(joint + " is not a valid joint name")

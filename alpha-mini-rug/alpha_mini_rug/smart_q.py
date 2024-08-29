@@ -5,39 +5,6 @@ from autobahn.twisted.util import sleep
 user_response = ""
 answers_found = False
 
-
-def listen_smart_question(frames):
-    """
-    Open a stream to listen to the user
-    """
-    global user_response
-    
-    if frames["data"]["body"]["final"]:
-        user_response = frames["data"]["body"]["text"]
-
-
-def find_the_answer(answer_dictionary):
-    """
-    Searches all values of the dictionary, so all lists of strings
-
-    Args:
-        answer_dictionary (_type_): _description_
-    
-    Return: The answer found in the user response and the answer key    
-        
-    """
-    global answers_found
-    answer_key = None
-    
-    for key in answer_dictionary.keys():  
-        for value in answer_dictionary[key]:
-            if value in user_response:
-                answers_found = True
-                answer_key = key
-
-    return answers_found, answer_key
-
-
 @inlineCallbacks
 def smart_questions(
     session,
@@ -144,3 +111,35 @@ def smart_questions(
                     text=question_try_again[randint(0, 2)], 
                     lang=question_try_again_lang
                 )
+                
+                
+def listen_smart_question(frames):
+    """
+    Open a stream to listen to the user
+    """
+    global user_response
+    
+    if frames["data"]["body"]["final"]:
+        user_response = frames["data"]["body"]["text"]
+
+
+def find_the_answer(answer_dictionary):
+    """
+    Searches all values of the dictionary, so all lists of strings
+
+    Args:
+        answer_dictionary (_type_): _description_
+    
+    Return: The answer found in the user response and the answer key    
+        
+    """
+    global answers_found
+    answer_key = None
+    
+    for key in answer_dictionary.keys():  
+        for value in answer_dictionary[key]:
+            if value in user_response:
+                answers_found = True
+                answer_key = key
+
+    return answers_found, answer_key
