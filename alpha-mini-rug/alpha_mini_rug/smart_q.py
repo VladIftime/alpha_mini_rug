@@ -135,7 +135,7 @@ def find_the_answer(answer_dictionary):
     Args:
         answer_dictionary (dict): The dictionary of answers
     
-    Return: 
+    Returns: 
         answer_found (str): The answer found in the user response   
         answer_key (str): The answer key corresponding to the answer_found
     """
