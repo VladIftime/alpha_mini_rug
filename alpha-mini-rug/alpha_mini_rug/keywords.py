@@ -8,18 +8,21 @@ debug_flag = False
 key_words_list = []
 
 @inlineCallbacks
-def key_words(session,
-              question = None, 
-              question_lang = 'en', 
-              key_words = None, 
-              key_words_lang = 'en', 
-              time = 3,
-              certainty = 0, 
-              debug = False):
+def key_words(
+    session,
+    question = None, 
+    question_lang = 'en', 
+    key_words = None, 
+    key_words_lang = 'en', 
+    time = 3,
+    certainty = 0, 
+    debug = False
+):
     """
     This function asks a question and waits for the user to respond with a keyword from the list of keywords.
 
     Args:
+        session (Component): The session object.
         question (str): The question to be asked.
         question_lang (str): The language the question needs to be read in.
         key_words (list): A list of keywords to be checked in the user response.
@@ -104,10 +107,12 @@ def key_words_listen(frame):
     # 1. the text found is not an empty string
     # 2. the text found is "Final" (all words heard are concatenated in one string)
     # 3. the user wants to choose words based on the "certainty"
-    if (not frame["data"]["body"]["text"] == "" and
+    if (
+        not frame["data"]["body"]["text"] == "" and
         frame["data"]["body"]["final"] and
         "certainty" in frame["data"]["body"] and 
-        frame["data"]["body"]["certainty"] > certainty_check):
+        frame["data"]["body"]["certainty"] > certainty_check
+        ):
             
             # check the words in the text found
             check_words(frame["data"]["body"]["text"])

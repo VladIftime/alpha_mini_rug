@@ -10,14 +10,15 @@ key_words_list = []
 
 
 @inlineCallbacks
-def key_words(session,
-            question = None, 
-            question_lang = 'en', 
-            key_words = None, 
-            key_words_lang = 'en', 
-            time = 3,
-            certainty = 0, 
-            debug = False):
+def key_words(
+    session,
+    question = None, 
+    question_lang = 'en', 
+    key_words = None, 
+    key_words_lang = 'en', 
+    time = 3,
+    certainty = 0, 
+    debug = False):
     
     global certainty_check
     global answer_found
