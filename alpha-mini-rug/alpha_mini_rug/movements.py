@@ -46,11 +46,19 @@ def check_angle_set_value(frame_joints_dic):
                 )
 
 def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_time):
-    ''' 
-        Check if the set time is too quick and adjust it proportional to the angle of movement
+    """
+    Calculate the time required to perform a movement based on the proportional time of the movement.
+    
+    Args:
+        current_pos (float): The current position of the joint.
+        target_pos (float): The target position of the joint.
+        min_angle (float): The minimum angle of the joint.
+        max_angle (float): The maximum angle of the joint.
+        min_time (float): The minimum time required to perform a full movement from min to max.
         
-        Return: the proportional time in ms
-    '''
+    Returns:
+        float: The proportional time required to perform the movement.
+    """
     # calculate the total range of motion
     total_range = abs(max_angle - min_angle)
 
