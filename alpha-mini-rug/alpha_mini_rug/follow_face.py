@@ -21,8 +21,6 @@ def follow_face(session):
 
     yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
-    
-    pass
 
 
 def detect_face_in_frame(frame):
@@ -111,4 +109,3 @@ def center_face(session, frame):
 
     yield session.call("rom.actuator.motor.write", frames=frames, force=True, sync=True)
     
-    pass

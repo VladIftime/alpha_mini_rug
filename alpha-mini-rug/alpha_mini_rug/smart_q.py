@@ -3,6 +3,7 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
 
 user_response = ""
+debug_flag = False
 
 @inlineCallbacks
 def smart_questions(
@@ -36,6 +37,8 @@ def smart_questions(
     Returns:
         str: The answer found in the user response.
     """
+    
+    global debug_flag
     
     if question_try_again is None:
         question_try_again = [
@@ -76,6 +79,7 @@ def smart_questions(
     if not isinstance(debug, bool):
         raise TypeError("debug is not a boolean")
 
+    debug_flag = debug
     timer = 0
     attempt = 0
 
@@ -86,10 +90,7 @@ def smart_questions(
     yield session.subscribe(listen_smart_question, "rie.dialogue.stt.stream")
     yield session.call("rie.dialogue.stt.stream")
 
-    if user_response != "" and debug:
-        print("User response: ", user_response)
-
-    # loop while user did not say goodbye/bye or number of attempts was reached
+    # loop while the number of attempts was reached
     while True:
         answer_found, answer = find_the_answer(answer_dictionary)
         if answer_found:
@@ -110,7 +111,6 @@ def smart_questions(
                     text=question_try_again[randint(0, 2)], 
                     lang=question_try_again_lang
                 )
-
                 
                 
 def listen_smart_question(frames):
@@ -124,9 +124,13 @@ def listen_smart_question(frames):
         None
     """
     global user_response
+    global debug_flag
     
     if frames["data"]["body"]["final"]:
         user_response = frames["data"]["body"]["text"]
+        
+    if user_response != "" and debug_flag:
+        print("User response: ", user_response)    
         
     pass
 

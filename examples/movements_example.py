@@ -6,18 +6,10 @@ from alpha_mini_rug import perform_movement
 @inlineCallbacks
 def main(session, details):
     frames = [
-        {
-            "time": 100,
-            "data": {
-                "body.arms.left.lower.roll": -1,
-                "body.arms.right.lower.roll": -1.70,
-            },
-        },
-        {
-            "time": 400,
-            "data": {"body.arms.left.lower.roll": 0, "body.arms.right.lower.roll": 0},
-        },
+        {"time": 800, "data": { "body.arms.right.upper.pitch": -1.7,"body.arms.left.upper.pitch": -1.7},},
+        {"time": 1600, "data": {"body.arms.right.upper.pitch": 0.5,"body.arms.left.upper.pitch": 0.5},},
     ]
+    
     yield perform_movement(session=session, frames=frames, force=True)
 
     session.leave()
@@ -31,7 +23,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66cdbc1aafe50d23b76c2e6b",
+    realm="rie.66d1bf9cafe50d23b76c4feb",
 )
 
 wamp.on_join(main)

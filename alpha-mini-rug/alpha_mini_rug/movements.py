@@ -9,17 +9,17 @@ joints_dic = {
     "body.head.yaw": (-0.874, 0.874, 600), 
     "body.head.roll": (-0.174, 0.174, 400), 
     "body.head.pitch": (-0.174, 0.174, 400),
-    "body.arms.right.upper.pitch": (-2.59, 1.59, 1800),
-    "body.arms.right.lower.roll": (-1.74, 0.000064, 1200),
+    "body.arms.right.upper.pitch": (-2.59, 1.59, 1600),
+    "body.arms.right.lower.roll": (-1.74, 0.000064, 700),
     "body.arms.left.upper.pitch": (-2.59, 1.59, 1600),
-    "body.arms.left.lower.roll": (-1.74, 0.000064, 1200),
+    "body.arms.left.lower.roll": (-1.74, 0.000064, 700),
     "body.torso.yaw": (-0.874, 0.874, 1000),
-    "body.legs.right.upper.pitch": (-1.74, 1.74, 1600),
-    "body.legs.right.lower.pitch": (-1.74, 1.74, 1200), 
-    "body.legs.right.foot.roll": (-0.849, 0.249, 1000), 
-    "body.legs.left.upper.pitch": (-1.74, 1.74, 1600), 
-    "body.legs.left.lower.pitch": (-1.74, 1.74, 1200), 
-    "body.legs.left.foot.roll": (-0.849, 0.249, 1000),
+    "body.legs.right.upper.pitch": (-1.73, 1.73, 1000),
+    "body.legs.right.lower.pitch": (-1.5, 1.5, 800), 
+    "body.legs.right.foot.roll": (-0.849, 0.249, 800), 
+    "body.legs.left.upper.pitch": (-1.73, 1.73, 1000), 
+    "body.legs.left.lower.pitch": (-1.5, 1.5, 800),
+    "body.legs.left.foot.roll": (-0.849, 0.249, 800),
 }
 
 def check_angle_set_value(frame_joints_dic):
@@ -137,16 +137,17 @@ def perform_movement(
                 joints_dic[joint][2],
             )
             minimum_required_time = round(minimum_required_time, 2)
-        if frame2["time"] == None or minimum_required_time > frame2["time"]:
+            estimated_time = frame2["time"] - frame1["time"]
+        if frame2["time"] == None or minimum_required_time > estimated_time:
             print(
                 "The time of frame "
                 + str(idx + 1)
                 + " was changed from "
                 + str(frame2["time"])
                 + " to "
-                + str(minimum_required_time)
+                + str(minimum_required_time + frame1["time"])
             )
-            frame2["time"] = minimum_required_time
+            frame2["time"] = minimum_required_time + frame1["time"]
 
     session.call("rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True)
     

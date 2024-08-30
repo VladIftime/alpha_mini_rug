@@ -32,7 +32,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66cdbc1aafe50d23b76c2e6b",
+    realm="rie.66d1bf9cafe50d23b76c4feb",
 )
 
 wamp.on_join(main)
