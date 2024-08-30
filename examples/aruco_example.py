@@ -2,24 +2,21 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from alpha_mini_rug import aruco_detect_markers
 
-ids_code = None
+check = 0 # when the aruco card #2 was seen, the check flag becomes 1
 
 
 @inlineCallbacks
 def aruco(session, frame):
     global ids_code
+    global check
     corners, ids = aruco_detect_markers(frame)
     print("corners:", corners)
-    if not ids == None:
-        print("ids:", ids[0])
-        ids_code = ids[0]
-    print(ids_code)
-
-    if ids_code != None and ids_code == 2:
-        print(ids_code)
-        yield session.call(
-            "rie.dialogue.say", text="Red is certainly a beautiful colour!"
-        )
+    print("ids:", ids)
+    
+    # check when the second card was seen
+    if not ids == None and ids[0] == 2 and check == 0:
+        check = 1
+        yield session.call("rie.dialogue.say", text="Red is certainly a beautiful color!")
 
 
 @inlineCallbacks
@@ -41,13 +38,11 @@ def behavior_speech(session):
         yield session.call(
             "rie.dialogue.say", text="Red is certainly a beautiful colour!"
         )
-
+    
 
 def main(session, details):
-    global ids_code
     behavior(session)
     yield behavior_speech(session)
-
 
 wamp = Component(
     transports=[
@@ -57,7 +52,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66d1c84cafe50d23b76c5023",
+    realm="rie.66d1bf9cafe50d23b76c4feb",
 )
 
 wamp.on_join(main)
