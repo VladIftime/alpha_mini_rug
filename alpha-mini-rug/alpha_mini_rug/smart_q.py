@@ -110,6 +110,7 @@ def smart_questions(
                     text=question_try_again[randint(0, 2)], 
                     lang=question_try_again_lang
                 )
+
                 
                 
 def listen_smart_question(frames):
@@ -126,6 +127,8 @@ def listen_smart_question(frames):
     
     if frames["data"]["body"]["final"]:
         user_response = frames["data"]["body"]["text"]
+        
+    pass
 
 
 def find_the_answer(answer_dictionary):

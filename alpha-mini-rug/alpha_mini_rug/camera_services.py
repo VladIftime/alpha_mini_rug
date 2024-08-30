@@ -35,3 +35,5 @@ def show_camera_stream(frame):
     # Display the image and close it in 1 second
     cv2.imshow("Camera Stream", image)
     cv2.waitKey(100)
+    
+    pass

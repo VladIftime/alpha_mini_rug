@@ -6,17 +6,6 @@ from alpha_mini_rug import follow_face
 @inlineCallbacks
 def behavior(session):
     yield follow_face(session)
-    
-    yield session.call("rie.dialogue.say", text="Red")
-    yield session.call("rie.dialogue.say", text="Blue")
-    yield session.call("rie.dialogue.say", text="yellow")
-    yield session.call("rie.dialogue.say", text="red")
-    yield session.call("rie.dialogue.say", text="purple")
-    yield session.call("rie.dialogue.say", text="pink")
-    yield session.call("rie.dialogue.say", text="Blue")
-    yield session.call("rie.dialogue.say", text="Blue")
-    yield session.call("rie.dialogue.say", text="Blue")
-    yield session.call("rie.dialogue.say", text="Blue")
     pass
 
 
@@ -33,7 +22,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66cdbc1aafe50d23b76c2e6b",
+    realm="rie.66d1bf9cafe50d23b76c4feb",
 )
 
 wamp.on_join(main)

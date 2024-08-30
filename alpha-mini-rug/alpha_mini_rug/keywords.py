@@ -101,6 +101,8 @@ def check_words(frame_text):
         if word in key_words_list:
             answer_found = word
             break
+        
+    pass
 
 
 def key_words_listen(frame):
@@ -131,3 +133,5 @@ def key_words_listen(frame):
         if debug_flag:
             print("The user input is:")
             print(frame["data"]["body"]["text"])
+
+    pass

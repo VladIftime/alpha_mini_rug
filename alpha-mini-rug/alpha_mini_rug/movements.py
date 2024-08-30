@@ -43,7 +43,9 @@ def check_angle_set_value(frame_joints_dic):
             ):
                 raise ValueError(
                     "The angle selected for joint " + joint + " is out of bounds"
-                )
+                )        
+    
+    pass            
 
 def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_time):
     """
@@ -147,3 +149,5 @@ def perform_movement(
             frame2["time"] = minimum_required_time
 
     session.call("rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True)
+    
+    pass
