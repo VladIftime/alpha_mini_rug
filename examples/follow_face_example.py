@@ -6,6 +6,17 @@ from alpha_mini_rug import follow_face
 @inlineCallbacks
 def behavior(session):
     yield follow_face(session)
+    
+    yield session.call("rie.dialogue.say", text="Red")
+    yield session.call("rie.dialogue.say", text="Blue")
+    yield session.call("rie.dialogue.say", text="yellow")
+    yield session.call("rie.dialogue.say", text="red")
+    yield session.call("rie.dialogue.say", text="purple")
+    yield session.call("rie.dialogue.say", text="pink")
+    yield session.call("rie.dialogue.say", text="Blue")
+    yield session.call("rie.dialogue.say", text="Blue")
+    yield session.call("rie.dialogue.say", text="Blue")
+    yield session.call("rie.dialogue.say", text="Blue")
     pass
 
 
