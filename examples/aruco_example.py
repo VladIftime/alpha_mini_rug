@@ -12,6 +12,7 @@ def aruco(session, frame):
     print("corners:", corners)
     print("ids:", ids)
     
+    # check when the second card was seen
     if not ids == None and ids[0] == 2 and check == 0:
         check = 1
         yield session.call("rie.dialogue.say", text="Red is certainly a beautiful color!")
