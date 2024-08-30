@@ -13,7 +13,9 @@ def follow_face(session):
         The session object for the connection to the robot
 
     """
-
+    
+    # Wrapper to send the session to the callback function
+    # otherwise we can only send the frame
     def center_face_wrapper(frame):
         return center_face(session, frame)
 
