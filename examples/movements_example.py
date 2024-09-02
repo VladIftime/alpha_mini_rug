@@ -2,7 +2,6 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from alpha_mini_rug import perform_movement
 
-
 @inlineCallbacks
 def main(session, details):
     frames = [

@@ -101,7 +101,7 @@ def check_words(frame_text):
         if word in key_words_list:
             answer_found = word
             break
-        
+
     pass
 
 

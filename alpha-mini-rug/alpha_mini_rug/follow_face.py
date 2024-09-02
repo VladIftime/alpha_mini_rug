@@ -13,7 +13,7 @@ def follow_face(session):
         The session object for the connection to the robot
 
     """
-    
+
     # Wrapper to send the session to the callback function
     # otherwise we can only send the frame
     def center_face_wrapper(frame):
@@ -21,7 +21,7 @@ def follow_face(session):
 
     yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
-    
+
     pass
 
 
@@ -84,31 +84,39 @@ def center_face(session, frame):
     """
     center = None
     result = detect_face_in_frame(frame)
-
     if result is not None:
         top_left, bottom_right = result
+        # Calculate the center of the detected face
         center = (
             (top_left[0] + bottom_right[0]) // 2,
             (top_left[1] + bottom_right[1]) // 2,
         )
 
-    motors = yield session.call("rom.sensor.proprio.read")
-    head_motors = motors[0]["data"]["body.head.yaw"]
-
     if center and center[0] > 155:
-        head_motors - 0.06
-    elif center and center[0] < 125:
-        head_motors + 0.06
-
-    frames = [
-        {
-            "time": 100,
-            "data": {
-                "body.head.yaw": head_motors,
+        motors = yield session.call("rom.sensor.proprio.read")
+        head_motors = motors[0]["data"]["body.head.yaw"]
+        frames = [
+            {
+                "time": 100,
+                "data": {
+                    "body.head.yaw": head_motors - 0.06,
+                },
             },
-        },
-    ]
-
-    yield session.call("rom.actuator.motor.write", frames=frames, force=True, sync=True)
-    
-    pass
+        ]
+        yield session.call(
+            "rom.actuator.motor.write", frames=frames, force=True, sync=True
+        )
+    elif center and center[0] < 125:
+        motors = yield session.call("rom.sensor.proprio.read")
+        head_motors = motors[0]["data"]["body.head.yaw"]
+        frames = [
+            {
+                "time": 100,
+                "data": {
+                    "body.head.yaw": head_motors + 0.06,
+                },
+            },
+        ]
+        yield session.call(
+            "rom.actuator.motor.write", frames=frames, force=True, sync=True
+        )
