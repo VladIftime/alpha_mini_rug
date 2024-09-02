@@ -22,8 +22,6 @@ def follow_face(session):
     yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
 
-    pass
-
 
 def detect_face_in_frame(frame):
     """Function to detect a face in a frame using OpenCV's Haar Cascade classifier

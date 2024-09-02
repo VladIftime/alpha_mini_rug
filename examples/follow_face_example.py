@@ -6,7 +6,7 @@ from alpha_mini_rug import follow_face
 @inlineCallbacks
 def behavior(session):
     yield follow_face(session)
-    pass
+    
 
 
 def main(session, details):
