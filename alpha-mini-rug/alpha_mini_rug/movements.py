@@ -1,13 +1,13 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 
-''' 
+""" 
     Dictionary of joint angles
     joint name: (min_angle, max_angle, minimum time to perform a full movement from min to max)":
-'''
+"""
 joints_dic = {
-    "body.head.yaw": (-0.874, 0.874, 600), 
-    "body.head.roll": (-0.174, 0.174, 400), 
+    "body.head.yaw": (-0.874, 0.874, 600),
+    "body.head.roll": (-0.174, 0.174, 400),
     "body.head.pitch": (-0.174, 0.174, 400),
     "body.arms.right.upper.pitch": (-2.59, 1.59, 1600),
     "body.arms.right.lower.roll": (-1.74, 0.000064, 700),
@@ -15,22 +15,23 @@ joints_dic = {
     "body.arms.left.lower.roll": (-1.74, 0.000064, 700),
     "body.torso.yaw": (-0.874, 0.874, 1000),
     "body.legs.right.upper.pitch": (-1.73, 1.73, 1000),
-    "body.legs.right.lower.pitch": (-1.5, 1.5, 800), 
-    "body.legs.right.foot.roll": (-0.849, 0.249, 800), 
-    "body.legs.left.upper.pitch": (-1.73, 1.73, 1000), 
+    "body.legs.right.lower.pitch": (-1.5, 1.5, 800),
+    "body.legs.right.foot.roll": (-0.849, 0.249, 800),
+    "body.legs.left.upper.pitch": (-1.73, 1.73, 1000),
     "body.legs.left.lower.pitch": (-1.5, 1.5, 800),
     "body.legs.left.foot.roll": (-0.849, 0.249, 800),
 }
 
+
 def check_angle_set_value(frame_joints_dic):
-    """ 
+    """
     Check if the name of the joints are specified correctly and the set angles are within the hardware boundaries
-    
+
     Args:
         frame_joints_dic (dict): Dictionary of all joint names and angle limits
-        
+
     Returns:
-        None    
+        None
     """
     for joint in frame_joints_dic:
         if not joint in joints_dic:
@@ -43,21 +44,22 @@ def check_angle_set_value(frame_joints_dic):
             ):
                 raise ValueError(
                     "The angle selected for joint " + joint + " is out of bounds"
-                )        
-    
-    pass            
+                )
+
+    pass
+
 
 def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_time):
     """
     Calculate the time required to perform a movement based on the proportional time of the movement.
-    
+
     Args:
         current_pos (float): The current position of the joint.
         target_pos (float): The target position of the joint.
         min_angle (float): The minimum angle of the joint.
         max_angle (float): The maximum angle of the joint.
         min_time (float): The minimum time required to perform a full movement from min to max.
-        
+
     Returns:
         float: The proportional time required to perform the movement.
     """
@@ -72,10 +74,9 @@ def calculate_required_time(current_pos, target_pos, min_angle, max_angle, min_t
 
     return proportional_time
 
+
 @inlineCallbacks
-def perform_movement(
-    session, frames, mode="linear", sync=True, force=False
-):
+def perform_movement(session, frames, mode="linear", sync=True, force=False):
     """
     This function performs a movement with the robot's joints. The time of each frame is calculated based on the proportional time of the movement.
 
@@ -89,16 +90,16 @@ def perform_movement(
     Returns:
         None
     """
-    
+
     # check if the arguments are of the correct type
     if not isinstance(frames, list) and all(isinstance(item, dict) for item in frames):
-        raise TypeError('frames is not a list of tuples')
+        raise TypeError("frames is not a list of tuples")
     if not isinstance(mode, str):
-        raise TypeError('mode is not a string')
+        raise TypeError("mode is not a string")
     if not isinstance(sync, bool):
-        raise TypeError('sync is not a boolean')
+        raise TypeError("sync is not a boolean")
     if not isinstance(force, bool):
-        raise TypeError('force is not a boolean')
+        raise TypeError("force is not a boolean")
 
     # get the joints angle at this time
     current_position = yield session.call("rom.sensor.proprio.read")
@@ -149,6 +150,8 @@ def perform_movement(
             )
             frame2["time"] = minimum_required_time + frame1["time"]
 
-    session.call("rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True)
-    
+    session.call(
+        "rom.actuator.motor.write", frames=frames, mode=mode, sync=sync, force=True
+    )
+
     pass

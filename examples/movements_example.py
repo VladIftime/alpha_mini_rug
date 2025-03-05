@@ -2,13 +2,28 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from alpha_mini_rug import perform_movement
 
+
 @inlineCallbacks
 def main(session, details):
     frames = [
-        {"time": 800, "data": { "body.arms.right.upper.pitch": -1.7,"body.arms.left.upper.pitch": -1.7},},
-        {"time": 1600, "data": {"body.arms.right.upper.pitch": 0.5,"body.arms.left.upper.pitch": 0.5},},
+        {
+            "time": 800,
+            "data": {
+                "body.arms.right.upper.pitch": -1.7,
+                "body.arms.left.upper.pitch": -1.7,
+                "body.arms.left.lower.roll": -1.7,
+            },
+        },
+        {
+            "time": 1600,
+            "data": {
+                "body.arms.right.upper.pitch": 0.5,
+                "body.arms.left.upper.pitch": 0.5,
+                "body.arms.left.lower.roll": 0.5,
+            },
+        },
     ]
-    
+
     yield perform_movement(session=session, frames=frames, force=True)
 
     session.leave()
@@ -22,7 +37,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66d1bf9cafe50d23b76c4feb",
+    realm="rie.67b6fb8da06ea6579d1409d3",
 )
 
 wamp.on_join(main)

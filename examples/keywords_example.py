@@ -3,23 +3,21 @@ from twisted.internet.defer import inlineCallbacks
 from alpha_mini_rug import key_words
 
 
-
 @inlineCallbacks
 def behavior(session):
     # define question 1 together with the keywords and answers
     question_colors = "What is your favorite color?"
     keywords_colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"]
 
-
     # call keywords function, setting the language of both question and answer
     # to English; records the answer with a certainty higher than 0.1 for 5
     # seconds; with the debug flag set to true, it prints all the words heard
     answer = yield key_words(
-        session = session,
+        session=session,
         question=question_colors,
-        question_lang='en',
+        question_lang="en",
         key_words=keywords_colors,
-        key_words_lang='en',
+        key_words_lang="en",
         time=5,
         certainty=0.1,
         debug=True,
@@ -31,7 +29,7 @@ def behavior(session):
         string = "Didn't understand your answer, try again later"
 
     yield session.call("rie.dialogue.say", text=string)
-    
+
     session.leave()
 
     pass
@@ -39,7 +37,7 @@ def behavior(session):
 
 def main(session, details):
     behavior(session)
-    
+
     pass
 
 
@@ -51,7 +49,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66d1bf9cafe50d23b76c4feb",
+    realm="rie.67a1e39485ba37f92bb12de9",
 )
 
 wamp.on_join(main)

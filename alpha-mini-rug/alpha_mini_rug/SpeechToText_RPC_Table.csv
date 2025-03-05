@@ -1,0 +1,174 @@
+RPC,Returns
+"SpeechToText.__init__
+
+No description available.",Unknown
+"SpeechToText.logger
+
+Logs a given string if logging is enabled.
+
+Args:
+    string (str): The string to be logged.",Unknown
+"SpeechToText.loop
+
+Continuously processes audio frames if processing is active.
+
+This method checks if the processing flag is set to True. If it is,
+it logs the start of the processor and processes the next audio frame
+from the to_process_frames list.
+
+Note:
+    Ensure that the to_process_frames list is not empty before calling
+    this method to avoid IndexError.
+
+Attributes:
+    processing (bool): Flag indicating whether processing is active.
+    logger (function): Function to log messages.
+    process_audio (function): Function to process audio frames.
+    to_process_frames (list): List of audio frames to be processed.",Unknown
+"SpeechToText.get_text
+
+Retrieves the text.
+
+Returns:
+    str: The text stored in the instance.",str: The text stored in the instance.
+"SpeechToText.listen
+
+Processes incoming audio data and appends it to the audio frames list.
+
+Args:
+    data (dict): A dictionary containing audio data. The audio data is expected to be found
+                 under the key ""data"" and subkey ""body.head"".
+
+Returns:
+    None",None
+"SpeechToText.listen_split
+
+Processes incoming audio data and appends it to the audio frames list.
+
+Args:
+    data (dict): A dictionary containing audio data. The audio data is expected to be found
+                 at data[""data""][""body.head""].
+
+Returns:
+    None
+
+Raises:
+    None
+
+Notes:
+    - If the audio data is None, the function does nothing.
+    - If the audio data is not None, it converts the audio data from a buffer to a numpy array
+      of int16 type and appends it to the audio_frames list.
+    - Logs the first element of the audio frame if logging is enabled.
+    - If an exception occurs during appending, it logs an error message.",None
+"SpeechToText.listen_continues
+
+Processes continuous audio data for speech recognition.
+This method listens to incoming audio data and processes it for speech recognition.
+It appends audio frames to a buffer and detects silence to determine when to process
+the buffered audio frames.
+Args:
+    data (dict): A dictionary containing audio data. The audio data is expected to be
+                 in the format data[""data""][""body.head""].
+Attributes:
+    do_speech_recognition (bool): A flag indicating whether speech recognition is enabled.
+    mode_continues (bool): A flag indicating whether continuous mode is active.
+    audio_frames (list): A list to store audio frames.
+    stop_log (bool): A flag indicating whether logging is stopped.
+    silence_counter (int): A counter to track the number of silent audio frames.
+    silence_threshold2 (int): A threshold value to determine silence in audio frames.
+    sample_rate (int): The sample rate of the audio data.
+    silence_time (float): The duration of silence to detect in seconds.
+    processing (bool): A flag indicating whether audio processing is ongoing.
+    to_process_frames (list): A list to store frames to be processed.
+Raises:
+    Exception: If there is an error appending audio frames to the buffer.",Unknown
+"SpeechToText.split_audio
+
+Splits the given audio data into chunks based on detected silence.
+
+Parameters:
+audio_data (numpy.ndarray): The audio data to be split.
+
+Returns:
+list: A list of numpy arrays, each representing a chunk of the original audio data.
+
+The method works by identifying regions of silence in the audio data and using these regions as split points.
+Silence is defined as audio samples with an absolute value below a certain threshold. The method also ensures
+that chunks shorter than a specified length are removed.
+
+The method logs the number of detected chunks, the length of each chunk, and the number of chunks left after
+removing short chunks.","list: A list of numpy arrays, each representing a chunk of the original audio data."
+"SpeechToText.process_audio
+
+Processes the input audio data and performs speech-to-text conversion.
+
+Args:
+    input_audio (list of numpy arrays): A list of numpy arrays containing audio data.
+
+Returns:
+    None
+
+This method performs the following steps:
+1. Logs the start of audio processing.
+2. Concatenates all input audio data into a single numpy array.
+3. Normalizes the concatenated audio data.
+4. Depending on the mode (continuous or not), it either splits the audio into word packets or processes the entire audio.
+5. If in non-continuous mode, it saves and converts each word packet to text.
+6. If in continuous mode, it saves and converts the entire audio to text if its length exceeds a threshold.
+7. Logs the length of the audio and stops recognition if the audio is too short.
+8. Sets the processing flag to False when done.",None
+"SpeechToText.speech_to_text
+
+Converts speech from an audio file to text using Google's speech recognition API.
+
+Args:
+    data: The input data for the speech to text conversion (not used in the current implementation).
+
+Returns:
+    None
+
+Side Effects:
+    - Logs the process of speech to text conversion.
+    - Appends recognized Dutch text to self.dutch_words.
+    - Appends recognized English text to self.english_words.
+    - Sets self.new_words to True if new words are recognized.
+
+Raises:
+    Exception: If the speech recognition fails, logs an error message.",None
+"SpeechToText.give_me_words
+
+Retrieve the list of English words.
+This method logs the action, sets the `new_words` attribute to False,
+and returns the list of English words stored in the `english_words` attribute.
+Returns:
+    list: A list of English words.",list: A list of English words.
+"SpeechToText.plot_audio_frames
+
+Plots the audio frames from the given data and saves the plot as an image.
+Parameters:
+data (array-like): The audio data to be plotted.
+The function creates a plot of the audio frames with the x-axis representing the sample index and the y-axis representing the amplitude.
+The plot is saved as 'output/plot.png'. If an error occurs during plotting, an error message is logged.",Unknown
+"SpeechToText.normalize_audio
+
+Normalize the audio data to a target peak value.
+Parameters:
+audio_data (numpy.ndarray): The input audio data array.
+target_peak (int, optional): The target peak value for normalization. Default is 32767.
+Returns:
+numpy.ndarray: The normalized audio data array.",numpy.ndarray: The normalized audio data array.
+"SpeechToText.save_audio
+
+Save the provided audio data to a WAV file.
+
+Parameters:
+audio_data (numpy.ndarray): The audio data to be saved.
+
+The audio is saved with a sample rate of 16000 Hz, 1 channel, and a sample width of 2 bytes.
+If `self.mode_continues` is False, the audio is saved to a file named ""output/output{self.word_frame}.wav"".
+Otherwise, it is saved to ""output/output.wav"".
+
+The method increments `self.word_frame` after successfully saving the file.
+
+Logs a message indicating the file being saved. If an error occurs during saving, logs an error message.",Unknown

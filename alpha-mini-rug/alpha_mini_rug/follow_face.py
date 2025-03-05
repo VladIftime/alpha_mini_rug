@@ -2,6 +2,8 @@ import cv2
 import base64
 import numpy as np
 from twisted.internet.defer import inlineCallbacks
+from .camera_services import show_camera_stream
+from autobahn.twisted.util import sleep
 
 
 @inlineCallbacks
@@ -21,18 +23,19 @@ def follow_face(session):
 
     yield session.subscribe(center_face_wrapper, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
+    yield sleep(1.0)
 
 
 def detect_face_in_frame(frame):
     """Function to detect a face in a frame using OpenCV's Haar Cascade classifier
 
-    Args:
-        frame (dictionary):
-        The frame dictionary from the robot's camera stream
-
-    Returns:
-        tuple: (top_left, bottom_right)
-        The coordinates of the detected face in the frame
+        Args:
+            frame (dictionary):
+            The frame dictionary from the robot's camera stream
+    gitp
+        Returns:
+            tuple: (top_left, bottom_right)
+            The coordinates of the detected face in the frame
 
     """
     frame_single = frame["data"]["body.head.eyes"]
@@ -80,8 +83,11 @@ def center_face(session, frame):
     Returns:
         None
     """
+    # yield session.subscribe(show_camera_stream, "rom.sensor.sight.stream")
+
     center = None
     result = detect_face_in_frame(frame)
+
     if result is not None:
         top_left, bottom_right = result
         # Calculate the center of the detected face
@@ -89,32 +95,39 @@ def center_face(session, frame):
             (top_left[0] + bottom_right[0]) // 2,
             (top_left[1] + bottom_right[1]) // 2,
         )
+        print("center:", center)
 
-    if center and center[0] > 155:
+    if center:
         motors = yield session.call("rom.sensor.proprio.read")
         head_motors = motors[0]["data"]["body.head.yaw"]
+        # print("Test 1:", (150 - center[0]) / 100)
+        # print("Test 2:", (135 - center[0]) / 100)
+        delta = 0
+        if center[0] > 155:
+            delta = -0.1
+
+        elif center[0] < 135:
+            delta = 0.1
+
         frames = [
             {
                 "time": 100,
                 "data": {
-                    "body.head.yaw": head_motors - 0.06,
+                    "body.head.yaw": head_motors + delta,
                 },
             },
         ]
-        yield session.call(
-            "rom.actuator.motor.write", frames=frames, force=True, sync=True
-        )
-    elif center and center[0] < 125:
+    else:
         motors = yield session.call("rom.sensor.proprio.read")
         head_motors = motors[0]["data"]["body.head.yaw"]
+        delta = (head_motors,)
         frames = [
             {
                 "time": 100,
                 "data": {
-                    "body.head.yaw": head_motors + 0.06,
+                    "body.head.yaw": head_motors,
                 },
             },
         ]
-        yield session.call(
-            "rom.actuator.motor.write", frames=frames, force=True, sync=True
-        )
+
+    yield session.call("rom.actuator.motor.write", frames=frames, force=True, sync=True)

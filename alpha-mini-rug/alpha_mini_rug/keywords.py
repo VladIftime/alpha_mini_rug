@@ -36,12 +36,12 @@ def key_words(
         str: The keyword found in the user response.
 
     """
-    
+
     global certainty_check
     global answer_found
     global debug_flag
     global key_words_list
-    
+
     # # check if the arguments are of the correct type
     if not isinstance(question, str):
         raise TypeError("question is not a string")
@@ -62,8 +62,7 @@ def key_words(
     certainty_check = certainty
     debug_flag = debug
     key_words_list = key_words
-    
-    
+
     yield session.call("rie.dialogue.say", text=question, lang=question_lang)
 
     yield session.call("rie.dialogue.config.language", lang=key_words_lang)
@@ -78,7 +77,7 @@ def key_words(
         print("No answer found")
     else:
         print("The keyword found: " + answer_found)
-        
+
     session.call("rie.dialogue.stt.close")
 
     return answer_found
@@ -130,7 +129,7 @@ def key_words_listen(frame):
     ):
         # check the words in the text found
         check_words(frame["data"]["body"]["text"])
-        
+
     if debug_flag:
         print("The user input is:")
         print(frame["data"]["body"]["text"])

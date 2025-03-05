@@ -6,7 +6,6 @@ from alpha_mini_rug import follow_face
 @inlineCallbacks
 def behavior(session):
     yield follow_face(session)
-    
 
 
 def main(session, details):
@@ -22,7 +21,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66d1bf9cafe50d23b76c4feb",
+    realm="rie.67a1e39485ba37f92bb12de9",
 )
 
 wamp.on_join(main)

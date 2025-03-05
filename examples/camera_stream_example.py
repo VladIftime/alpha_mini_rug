@@ -8,7 +8,7 @@ from autobahn.twisted.util import sleep
 def behavior(session):
     yield session.subscribe(show_camera_stream, "rom.sensor.sight.stream")
     yield session.call("rom.sensor.sight.stream")
-    
+
     pass
 
 
@@ -25,7 +25,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.66d1bf9cafe50d23b76c4feb",
+    realm="rie.67a1e39485ba37f92bb12de9",
 )
 
 wamp.on_join(main)

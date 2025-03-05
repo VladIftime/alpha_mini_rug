@@ -5,14 +5,15 @@ from autobahn.twisted.util import sleep
 user_response = ""
 debug_flag = False
 
+
 @inlineCallbacks
 def smart_questions(
     session,
     question,
     answer_dictionary,
-    question_lang='en',
-    answer_lang='en',
-    question_try_again_lang = 'en',
+    question_lang="en",
+    answer_lang="en",
+    question_try_again_lang="en",
     question_try_again=None,
     waiting_time=5,
     number_attempts=3,
@@ -37,16 +38,16 @@ def smart_questions(
     Returns:
         str: The answer found in the user response.
     """
-    
+
     global debug_flag
-    
+
     if question_try_again is None:
         question_try_again = [
             "Sorry, can you repeat the answer?",
             "I couldn't hear the answer, can you repeat it again?",
             "I am not sure I can hear you, can you repeat?",
         ]
-        
+
     # check if the arguments are of the correct type
     if not isinstance(question, str):
         raise TypeError("question is not a string")
@@ -64,7 +65,7 @@ def smart_questions(
                     raise TypeError(
                         "answer_dictionary is not a dictionary of lists of strings"
                     )
-    
+
     if question_try_again is not None and not isinstance(question_try_again, list):
         raise TypeError("question_try_again is not a list")
     # check if the list contains only strings
@@ -107,31 +108,31 @@ def smart_questions(
             else:
                 timer = 0
                 yield session.call(
-                    "rie.dialogue.say", 
-                    text=question_try_again[randint(0, 2)], 
-                    lang=question_try_again_lang
+                    "rie.dialogue.say",
+                    text=question_try_again[randint(0, 2)],
+                    lang=question_try_again_lang,
                 )
-                
-                
+
+
 def listen_smart_question(frames):
     """
     Open a stream to listen to the user
-    
+
     Args:
         None
-    
+
     Return:
         None
     """
     global user_response
     global debug_flag
-    
+
     if frames["data"]["body"]["final"]:
         user_response = frames["data"]["body"]["text"]
-        
+
     if user_response != "" and debug_flag:
-        print("User response: ", user_response)    
-        
+        print("User response: ", user_response)
+
     pass
 
 
@@ -141,15 +142,15 @@ def find_the_answer(answer_dictionary):
 
     Args:
         answer_dictionary (dict): The dictionary of answers
-    
-    Returns: 
-        answer_found (str): The answer found in the user response   
+
+    Returns:
+        answer_found (str): The answer found in the user response
         answer_key (str): The answer key corresponding to the answer_found
     """
     answer_found = False
     answer_key = None
-    
-    for key in answer_dictionary.keys():  
+
+    for key in answer_dictionary.keys():
         for value in answer_dictionary[key]:
             if value in user_response:
                 answer_found = True
