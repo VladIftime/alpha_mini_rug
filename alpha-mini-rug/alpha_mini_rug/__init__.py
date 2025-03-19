@@ -5,3 +5,4 @@ from .follow_face import follow_face
 from .movements import perform_movement
 from .camera_services import show_camera_stream
 from .follow_face import detect_face_in_frame
+from .save_speech import SaveSpeech

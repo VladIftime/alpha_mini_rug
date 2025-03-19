@@ -37,6 +37,7 @@ def STT_continuous(session):
     print("here")
 
     counter = 0
+    word_array = []  # Initialize word_array
     while True:
         if audio_processor.new_words == False:
             yield sleep(0.2)
