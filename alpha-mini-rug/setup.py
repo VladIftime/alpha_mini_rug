@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="alpha_mini_rug",
-    version="0.7.0",
+    version="0.7.1",
     description="Alpha Mini Robot wrapper for the RUG Social Robotics Lab",
     author="RUG Social Robotics Lab",
     author_email="socialrobotics@rug.nl",
@@ -17,7 +17,6 @@ setup(
         "service_identity",
         "SpeechRecognition",
         "matplotlib",
-        "wave",
         "msgpack",
     ],
 )
