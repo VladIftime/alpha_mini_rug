@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alpha-mini-rug"
+version = "0.7.3"
+description = "Alpha Mini RUG robot control and computer vision package with speech recognition and face tracking"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "VladIftime", email = "your.email@example.com"}
+]
+keywords = ["robotics", "computer-vision", "speech-recognition", "aruco", "face-detection"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "opencv-python>=4.5.0",
+    "numpy>=1.19.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "black", "flake8"]
+speech = ["SpeechRecognition>=3.8.1", "pyttsx3>=2.90"]
+
+[project.urls]
+Homepage = "https://github.com/VladIftime/alpha_mini_rug"
+Repository = "https://github.com/VladIftime/alpha_mini_rug.git"
+Issues = "https://github.com/VladIftime/alpha_mini_rug/issues"
+
+[tool.setuptools]
+packages = ["alpha_mini_rug"]
+package-data = {alpha_mini_rug = ["*.csv"]}
