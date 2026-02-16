@@ -12,9 +12,9 @@ from alpha_mini_rug.speech_to_text import SpeechToText
 
 
 audio_processor = SpeechToText()
-audio_processor.silance_time = 0.5
-audio_processor.silance_threshold = 1000
-audio_processor.silance_threshold2 = 100
+audio_processor.silence_time = 0.5
+audio_processor.silence_threshold = 1000
+audio_processor.silence_threshold2 = 100
 audio_processor.logging = True
 
 
@@ -43,22 +43,29 @@ def STT_continuous(session):
             yield sleep(0.2)
             counter += 1
             if counter % 100 == 0:
-                audio_processor.do_speach = False
-                yield session.call("rie.dialogue.say", text="Say something")
-                audio_processor.do_speach = True
+                audio_processor.do_speech = False
+                yield session.call("rie.dialogue.say", text="say something")
+                audio_processor.do_speech = True
             try:
                 # print([word_array[0][-2:],word_array[1][-2:]])
-                print(word_array[-3:])
+                # print(word_array[-3:])
+                pass
             except:
                 pass
         else:
             word_array = audio_processor.give_me_words()
+            print("printing last word")
+
+            # print(word_array)
 
             try:
                 # print([word_array[0][-2:],word_array[1][-2:]])
-                print(word_array[-3:])
+
+                print(f"word: # {word_array[-1:][0][0]} # confidence # {word_array[-1:][0][1]} #")
             except:
-                print(word_array)
+                pass
+                print("errrs")
+                print(f"word: {word_array[-1:][0]} confidence {word_array[-1:][0]}")
         audio_processor.loop()
 
 

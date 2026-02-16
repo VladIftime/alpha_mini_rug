@@ -30,7 +30,7 @@ class SpeechToText:
 
         self.do_speech = True
         self.logging = False
-        self.set_log_level = "debug"
+        self.set_log_level = "minimal"
 
         self.save_to_wav = False
 
