@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "alpha-mini-rug"
-version = "0.7.3"
+version = "0.7.3.2"
 description = "Alpha Mini RUG robot control and computer vision package with speech recognition and face tracking"
 readme = "README.md"
 requires-python = ">=3.8"
