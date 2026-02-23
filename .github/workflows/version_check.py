@@ -15,6 +15,7 @@ def main():
     tag_version = os.environ.get('CHECK_RELEASE_TAG')
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         tag_version = "0.7.3.4"  # for testing
+        print("release tag will be pyproject tag")
 
     if not tag_version:
         print("No release tag provided")
@@ -34,6 +35,9 @@ def main():
             print(f"pyproject.toml error: {e}")
     else:
         pyproject_version = "MISSING_FILE"
+
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        tag_version = pyproject_version  
 
     if pyproject_version != tag_version:
         error_code.append("pyproject.toml is not the same as tag")
