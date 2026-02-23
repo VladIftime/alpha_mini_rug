@@ -1,0 +1,23 @@
+name: manual version check 
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  version-check:
+    name: Check release version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install toml requests packaging
+      - name: Run version check
+        env:
+          CHECK_RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: python .github/workflows/version_check.py test
