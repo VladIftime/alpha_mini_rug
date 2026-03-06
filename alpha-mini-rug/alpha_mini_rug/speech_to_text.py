@@ -245,7 +245,8 @@ class SpeechToText:
         try:
             # todo make detector een optie on in te stellen
             if self.language_setting not in languages:
-                self.logger("info", "language not supported current options are \"nl-NL\" and \"en-US\"")
+                self.logger("minimal", "language not supported current options are \"nl-NL\" and \"en-US\"")
+                self.logger("minimal", "Ask for implementation of more languages")
                 self.logger("info", f"\"{str(self.language_setting)}\" was given now using default language en-US")
                 text = recognizer.recognize_google(audio_data, language=languages[1], with_confidence=True)
             else:
