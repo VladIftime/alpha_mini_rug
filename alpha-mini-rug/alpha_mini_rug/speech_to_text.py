@@ -15,9 +15,9 @@ class SpeechToText:
         self.stop_log = False
 
         self.words = []
-        self.silence_time = 1  # can be somewhere between 0.5 and 3
-        self.silence_threshold = 1000
-        self.silence_threshold2 = 10  # can be somewhere between 100 and 400
+        self.silence_time = 1  # can be somewhere between 0.5 and 3 is in seconds
+        self.silence_threshold = 100    # silence threshold for single     splitting
+        self.silence_threshold2 = 100   # silence threshold for continuous splitting can be somewhere between 100 and 400
         self.max_length_audio = 10
 
         self.sample_rate = 16000
@@ -153,12 +153,11 @@ class SpeechToText:
             pass
 
     def split_audio(self, audio_data):
-        silence_threshold = 100
         # min_silence_duration = self.silence_time
         sample_rate = 16000
         min_silence_samples = int(sample_rate * self.silence_time)
 
-        silent_regions = np.where(np.abs(audio_data) < silence_threshold)[0]
+        silent_regions = np.where(np.abs(audio_data) < self.silence_threshold)[0]
 
         if len(silent_regions) == 0:
             return [audio_data]
