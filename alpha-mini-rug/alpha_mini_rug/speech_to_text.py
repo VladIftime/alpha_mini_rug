@@ -16,6 +16,8 @@ class SpeechToText:
         self.silence_time = 1  # can be somewhere between 0.5 and 3 is in seconds
         self.silence_threshold = 100    # silence threshold for single     splitting
         self.silence_threshold2 = 100   # silence threshold for continuous splitting can be somewhere between 100 and 400
+        
+        self.minimum_sound_time = 0.1 #amount of time sound needs to be there
 
         self.sample_rate = 16000
 
@@ -194,6 +196,15 @@ class SpeechToText:
     def proses_audio(self, input_audio):
         self.logger("debug", "proses audio")
         all_audio_data = np.concatenate(input_audio)
+
+        noise_packet_threshold = self.minimum_sound_time * (self.sample_rate/2)
+
+        if sum(abs(all_audio_data)>self.silence_threshold2) < noise_packet_threshold:
+            self.logger("minimal", "stopping processing throwing away data because not enough minimum sounds")
+            self.logger("info", f"not enough useful sounds in packet got {sum(abs(all_audio_data)>self.silence_threshold2)} requirement > {noise_packet_threshold}")
+            self.processing=False
+            return
+
         normalized_audio = self.normalize_audio(all_audio_data)
 
         # self.save_audio(normalized_audio)
