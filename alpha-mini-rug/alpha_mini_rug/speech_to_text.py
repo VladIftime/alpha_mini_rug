@@ -1,24 +1,21 @@
 
 import numpy as np
 import wave
-import subprocess
 import matplotlib.pyplot as plt
 import speech_recognition as sr
 # from .audio import AudioData, get_flac_converter
-from speech_recognition import AudioData
-
+# from speech_recognition import AudioData
+# import subprocess
 
 class SpeechToText:
     def __init__(self):
         self.audio_frames = []
         self.word_frame = 0
-        self.stop_log = False
 
         self.words = []
         self.silence_time = 1  # can be somewhere between 0.5 and 3 is in seconds
         self.silence_threshold = 100    # silence threshold for single     splitting
         self.silence_threshold2 = 100   # silence threshold for continuous splitting can be somewhere between 100 and 400
-        self.max_length_audio = 10
 
         self.sample_rate = 16000
 
@@ -196,7 +193,6 @@ class SpeechToText:
 
     def proses_audio(self, input_audio):
         self.logger("debug", "proses audio")
-        self.stop_log = True
         all_audio_data = np.concatenate(input_audio)
         normalized_audio = self.normalize_audio(all_audio_data)
 
