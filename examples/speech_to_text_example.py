@@ -8,8 +8,14 @@ import numpy as np
 import wave
 import os
 
-from alpha_mini_rug.speech_to_text import SpeechToText
+# use for importing pip lib
+# from alpha_mini_rug.speech_to_text import SpeechToText
 
+# use for importing local lib
+import sys
+sys.path.insert(0,"../alpha_mini_rug/alpha-mini-rug")
+from alpha_mini_rug.speech_to_text import SpeechToText
+print(SpeechToText)
 
 audio_processor = SpeechToText()
 audio_processor.silence_time = 0.5
@@ -96,7 +102,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.67a1cded85ba37f92bb12d56",
+    realm="rie.69aa9635b788cadff345b1f0",
 )
 
 
